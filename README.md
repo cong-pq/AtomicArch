@@ -2,7 +2,10 @@
 
 Atomic-B is a modern iOS application that demonstrates clean architecture principles and best practices in Swift development. The project showcases a well-structured, modular approach to building iOS applications with a focus on maintainability, testability, and scalability.
 
-![Demo Video](Resources/demo.mp4)
+## 🎥 Demo
+
+https://github.com/congpq98/AtomicB/assets/40276297/bd911090-0657-4b54-8e64-3e41cd6839dd
+
 
 ## 🏗 Architecture
 
@@ -37,7 +40,7 @@ The project follows Clean Architecture principles with a clear separation of con
 classDiagram
     direction LR
 
-    %% Presentation Layer
+    %% Presentation Layer - ViewModels
     class ListUserGitHubViewModel {
         -viewState: ViewState
         -users: [UserEntity]
@@ -54,22 +57,68 @@ classDiagram
         +transform(input: Input) Output
         +loadUser(username: String) async
     }
+
+    %% Presentation Layer - ViewControllers
     class ListUserGitHubViewController {
         -viewModel: ListUserGitHubViewModel
+        +delegate: ListUserGitHubViewControllerDelegate?
     }
     class UserDetailViewController {
         -viewModel: UserDetailViewModel
+        +delegate: UserDetailViewControllerDelegate?
     }
+
+    %% Presentation Layer - Coordinators & Router
+    class Coordinator {
+        <<protocol>>
+        +children: [Coordinator]
+        +router: Router
+        +present(animated: Bool, onDismissed: (() -> Void)?)
+        +dismiss(animated: Bool)
+        +presentChild(_ child: Coordinator, animated: Bool, onDismissed: (() -> Void)?)
+    }
+    class Router {
+        <<protocol>>
+        +present(_ viewController: UIViewController, animated: Bool)
+        +present(_ viewController: UIViewController, animated: Bool, onDismissed: (() -> Void)?)
+        +dismiss(animated: Bool)
+    }
+
+    class ListUserGitHubCoordinatorDelegate {
+        <<protocol>>
+        +listUserGitHubCoordinatorDidFinish(_ coordinator: ListUserGitHubCoordinator)
+    }
+    class UserDetailCoordinatorDelegate {
+        <<protocol>>
+        +userDetailCoordinatorDidFinish(_ coordinator: UserDetailCoordinator)
+    }
+
+    class ListUserGitHubViewControllerDelegate {
+        <<protocol>>
+        +didSelectUser(_ user: UserEntity)
+    }
+    class UserDetailViewControllerDelegate {
+        <<protocol>>
+        +userDetailViewControllerDidFinish(_ viewController: UserDetailViewController)
+    }
+
     class ListUserGitHubCoordinator {
-        -router: NavigationRouter
-        +start()
+        -children: [Coordinator]
+        -router: Router
+        -userUseCase: UserUseCase
+        -delegate: ListUserGitHubCoordinatorDelegate?
+        +present(animated: Bool, onDismissed: (() -> Void)?)
+        +didSelectUser(user: UserEntity)
     }
     class UserDetailCoordinator {
-        -router: NavigationRouter
-        -username: String
-        +start()
+        -children: [Coordinator]
+        -router: Router
+        -user: UserEntity
+        -userUseCase: UserUseCase
+        -delegate: UserDetailCoordinatorDelegate?
+        +present(animated: Bool, onDismissed: (() -> Void)?)
+        +userDetailViewControllerDidFinish(_: UserDetailViewController)
     }
-    class NavigationRouter
 
     %% Domain Layer - Protocols and Entities
     class UserUseCaseProtocol {
@@ -93,8 +142,14 @@ classDiagram
         -login: String
         -name: String
         -company: String
+        -blog: String
+        -location: String
+        -email: String
+        -bio: String
         -publicRepos: Int
-        // ... more properties
+        -publicGists: Int
+        -followers: Int
+        -following: Int
     }
 
     %% Data Layer - Implementations
@@ -114,17 +169,18 @@ classDiagram
         -path: String
         -method: HTTPMethod
         -task: NetworkTask
-        // ... more properties
+        -parameters: [String: Any]?
     }
     class NetworkError {
         <<enum>>
         +noConnection
         +invalidResponse
         +serverError
-        // ... more error types
+        +decodingError
+        +unknown
     }
     class AtomicLogger {
-        +log(level: LogLevel, message: String)
+        +log(level: LogLevel, message: String, metadata: [String: String]?)
     }
 
     %% Relationships
@@ -143,8 +199,22 @@ classDiagram
     NetworkServiceProtocol ..> Target : defines request target
     NetworkServiceProtocol ..> NetworkError : throws
 
-    ListUserGitHubCoordinator --> NavigationRouter : uses
-    UserDetailCoordinator --> NavigationRouter : uses
+    ListUserGitHubCoordinator ..|> Coordinator : implements
+    ListUserGitHubCoordinator --> Router : uses (via protocol)
+    ListUserGitHubCoordinator --> UserUseCase : uses (concrete)
+    ListUserGitHubCoordinator --> ListUserGitHubViewController : presents
+    ListUserGitHubCoordinator --o UserDetailCoordinator : presents new child
+    ListUserGitHubCoordinator ..> ListUserGitHubCoordinatorDelegate : delegates to
+    ListUserGitHubCoordinator ..> ListUserGitHubViewControllerDelegate : acts as delegate for
+
+    UserDetailCoordinator ..|> Coordinator : implements
+    UserDetailCoordinator --> Router : uses (via protocol)
+    UserDetailCoordinator --> UserUseCase : uses (concrete)
+    UserDetailCoordinator --> UserDetailViewController : presents
+    UserDetailCoordinator ..> UserDetailCoordinatorDelegate : delegates to
+    UserDetailCoordinator ..> UserDetailViewControllerDelegate : acts as delegate for
+
+    Coordinator o-- Coordinator : manages children
 
     UserEntity <.. UserUseCaseProtocol : returns
     UserDetailEntity <.. UserUseCaseProtocol : returns
