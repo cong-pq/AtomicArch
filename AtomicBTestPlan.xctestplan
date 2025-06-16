@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "F97375B3-CBB0-448D-B2C8-E43BC87DDEE2",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Atomic-B.xcodeproj",
+        "identifier" : "249AC6D82E001F94004B867A",
+        "name" : "Atomic-BTests"
+      }
+    }
+  ],
+  "version" : 1
+}

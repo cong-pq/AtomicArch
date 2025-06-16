@@ -1,0 +1,78 @@
+import os
+import subprocess
+import sys
+from datetime import datetime
+
+
+# Set environment variables for proper encoding and locale handling
+os.environ['LC_ALL'] = 'en_US.UTF-8'
+os.environ['LANG'] = 'en_US.UTF-8'
+
+# File paths (these should be updated according to your project structure)
+MAIN_SRC_PATH = "Atomic-B"
+
+
+# Function to handle errors and stop script execution
+def error(msg):
+    print(f"*** Script was interrupted due to an error. ***\nERROR: {msg}")
+    sys.exit(1)
+
+
+# Function to check if Mockolo is installed globally
+def check_mockolo_installed():
+    try:
+        subprocess.run(["which", "mockolo"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+# Function to generate mocks for the project
+def generate_mocks(tool, header, src_path):
+    print("Initializing mocks generation...")
+
+    # Prepare the command for mock generation (using provided tool, header, and paths)
+    command = [
+        tool,
+        '--header', header,
+        '--sourcefiles', f"{src_path}/Domain/UseCase/UserUseCase.swift",
+        '--destination', f"{src_path}/Mocks/UserUseCaseMocks.swift",
+        '--testable-imports', 'Atomic-B'
+    ]
+
+    # Run the command to generate mocks
+    try:
+        subprocess.run(command, check=True)
+        print("Mocks generated successfully.")
+    except subprocess.CalledProcessError as e:
+        error(f"Error during mock generation: {e}")
+
+
+# Function to generate the header with the current date
+def generate_header():
+    cur_date = datetime.now().strftime("%m/%d/%y")
+    return f"//\n// Updated on {cur_date}."
+
+
+# Main function to manage the script execution flow
+def main():
+    # Get tool name from command-line arguments or use None
+    tool = sys.argv[1] if len(sys.argv) > 1 else None
+
+    # If no tool is provided, check if Mockolo is installed globally
+    if tool:
+        print("*** Using the provided executable of Mockolo. ***")
+    else:
+        if check_mockolo_installed():
+            print("*** Using the homebrew version of Mockolo. ***")
+            tool = "mockolo"
+        else:
+            error("Please install Mockolo via Homebrew beforehand.")
+
+    # Generate mocks using the tool and header
+    header = generate_header()
+    generate_mocks(tool, header, MAIN_SRC_PATH)
+
+# Script entry point
+if __name__ == "__main__":
+    main()

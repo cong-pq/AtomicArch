@@ -1,0 +1,57 @@
+included:
+  - Sources
+  - Tests
+
+excluded:
+  - Pods
+  - .build
+  - DerivedData
+  - Generated
+
+# Common rules
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - function_body_length
+  - cyclomatic_complexity
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+  - contains_over_first_not_nil
+  - fatal_error_message
+  - force_unwrapping
+  - multiline_parameters
+  - private_outlet
+  - sorted_imports
+  - unneeded_parentheses_in_closure_argument
+  - vertical_whitespace_closing_braces
+
+# Customized rules
+line_length:
+  warning: 120
+  error: 200
+  ignores_comments: true
+
+type_body_length:
+  warning: 300
+  error: 500
+
+file_length:
+  warning: 500
+  error: 1000
+
+identifier_name:
+  min_length: 2
+  max_length: 40
+
+type_name:
+  min_length: 3
+  max_length: 40
+
+# Performance optimization
+cache_enabled: true
+analyzer_rules:
+  - explicit_self
+  - unused_declaration
+  - unused_import

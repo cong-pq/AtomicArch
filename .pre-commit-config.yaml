@@ -1,0 +1,19 @@
+repos:
+  - repo: local
+    hooks:
+      - id: swiftformat
+        name: SwiftFormat
+        entry: swiftformat
+        language: system
+        types: [swift]
+        args: [--config, .swiftformat]
+        files: \.(swift)$
+      - id: swiftlint
+        name: SwiftLint
+        entry: swiftlint lint --config .swiftlint.yaml
+        language: system
+        files: \.swift$
+        types: [file, swift]
+        pass_filenames: true
+        require_serial: true
+        stages: [commit]
