@@ -74,7 +74,7 @@ graph TD
 - Error handling and retry mechanisms
 
 ### Technical Features
-- SwiftUI-based UI
+- UIKit-based UI
 - Combine for reactive programming
 - Async/await for concurrency
 - Dependency injection
