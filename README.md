@@ -2,6 +2,8 @@
 
 Atomic-B is a modern iOS application that demonstrates clean architecture principles and best practices in Swift development. The project showcases a well-structured, modular approach to building iOS applications with a focus on maintainability, testability, and scalability.
 
+![Demo Video](Resources/demo.mp4)
+
 ## 🏗 Architecture
 
 The project follows Clean Architecture principles with a clear separation of concerns:
@@ -32,38 +34,128 @@ The project follows Clean Architecture principles with a clear separation of con
 ### Key Components
 
 ```mermaid
-graph TD
-    subgraph Presentation
-        VM[ViewModels]
-        V[Views]
-        C[Coordinators]
-    end
+classDiagram
+    direction LR
+
+    %% Presentation Layer
+    class ListUserGitHubViewModel {
+        -viewState: ViewState
+        -users: [UserEntity]
+        -userUseCase: UserUseCaseProtocol
+        +transform(input: Input) Output
+        +loadUsers() async
+        +loadMoreUsers() async
+        +refreshUsers() async
+    }
+    class UserDetailViewModel {
+        -viewState: ViewState
+        -user: UserDetailEntity?
+        -userUseCase: UserUseCaseProtocol
+        +transform(input: Input) Output
+        +loadUser(username: String) async
+    }
+    class ListUserGitHubViewController {
+        -viewModel: ListUserGitHubViewModel
+    }
+    class UserDetailViewController {
+        -viewModel: UserDetailViewModel
+    }
+    class ListUserGitHubCoordinator {
+        -router: NavigationRouter
+        +start()
+    }
+    class UserDetailCoordinator {
+        -router: NavigationRouter
+        -username: String
+        +start()
+    }
+    class NavigationRouter
+
+    %% Domain Layer - Protocols and Entities
+    class UserUseCaseProtocol {
+        <<protocol>>
+        +getListUser(perPage: Int, since: Int) [UserEntity]
+        +getUser(username: String) UserDetailEntity
+    }
+    class UserRepositoryProtocol {
+        <<protocol>>
+        +getListUser(perPage: Int, since: Int) [UserEntity]
+        +getUser(username: String) UserDetailEntity
+    }
+    class UserEntity {
+        -id: UUID
+        -login: String
+        -avatarUrl: String
+        -htmlUrl: String
+    }
+    class UserDetailEntity {
+        -id: Int
+        -login: String
+        -name: String
+        -company: String
+        -publicRepos: Int
+        // ... more properties
+    }
+
+    %% Data Layer - Implementations
+    class UserUseCase {
+        -repository: UserRepositoryProtocol
+    }
+    class UserRepository {
+        -networkService: NetworkServiceProtocol
+    }
+
+    %% Infrastructure Layer (Networking Module)
+    class NetworkServiceProtocol {
+        <<protocol>>
+        +request<T: Decodable>(_ target: Target) T
+    }
+    class Target {
+        -path: String
+        -method: HTTPMethod
+        -task: NetworkTask
+        // ... more properties
+    }
+    class NetworkError {
+        <<enum>>
+        +noConnection
+        +invalidResponse
+        +serverError
+        // ... more error types
+    }
+    class AtomicLogger {
+        +log(level: LogLevel, message: String)
+    }
+
+    %% Relationships
+    ListUserGitHubViewController ..> ListUserGitHubViewModel : uses
+    UserDetailViewController ..> UserDetailViewModel : uses
+
+    ListUserGitHubViewModel ..> UserUseCaseProtocol : uses
+    UserDetailViewModel ..> UserUseCaseProtocol : uses
+
+    UserUseCase ..|> UserUseCaseProtocol : implements
+    UserUseCase --> UserRepositoryProtocol : uses
+
+    UserRepository ..|> UserRepositoryProtocol : implements
+    UserRepository --> NetworkServiceProtocol : uses
+
+    NetworkServiceProtocol ..> Target : defines request target
+    NetworkServiceProtocol ..> NetworkError : throws
+
+    ListUserGitHubCoordinator --> NavigationRouter : uses
+    UserDetailCoordinator --> NavigationRouter : uses
+
+    UserEntity <.. UserUseCaseProtocol : returns
+    UserDetailEntity <.. UserUseCaseProtocol : returns
     
-    subgraph Domain
-        UC[UseCases]
-        E[Entities]
-        RI[Repository Interfaces]
-    end
-    
-    subgraph Data
-        REPO[Repositories]
-        DS[Data Sources]
-    end
-    
-    subgraph Infrastructure
-        API[Networking]
-        LOG[Logger]
-        CORE[Core]
-    end
-    
-    V -->|uses| VM
-    VM -->|uses| UC
-    UC -->|uses| RI
-    REPO -->|implements| RI
-    REPO -->|uses| API
-    API -->|uses| LOG
-    LOG -->|uses| CORE
+    UserEntity <.. UserRepositoryProtocol : returns
+    UserDetailEntity <.. UserRepositoryProtocol : returns
+
+    AtomicLogger <-- NetworkServiceProtocol : logs errors
 ```
+
+This diagram provides a clear visual representation of your `Atomic-B` project's architecture, showing the relationships and responsibilities of key components across different layers: Presentation, Domain, Data, and Infrastructure.
 
 ## 🚀 Features
 
