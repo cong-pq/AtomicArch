@@ -4,7 +4,7 @@ Atomic-B is a modern iOS application that demonstrates clean architecture princi
 
 ## 🎥 Demo
 
-<video src="https://raw.githubusercontent.com/congpq98/AtomicB/main/Resources/demo.mp4" controls="" width="100%"></video>
+[Watch Demo Video](https://raw.githubusercontent.com/congpq98/AtomicB/main/Resources/demo.mp4)
 
 
 ## 🏗 Architecture
