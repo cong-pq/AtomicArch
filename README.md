@@ -96,8 +96,6 @@ Atomic-B/
 ├── Networking/        # Networking module (with its own tests)
 ├── Atomic-BTests/      # Main app test target
 │   ├── Unit/
-│   ├── Integration/
-│   ├── UI/
 │   ├── Helpers/
 │   └── Mocks/
 └── Base.lproj/        # Localization resources
@@ -168,7 +166,6 @@ The project uses GitHub Actions for continuous integration:
 1. **Prerequisites**
    - Xcode 15.0+
    - Swift 5.9+
-   - CocoaPods (if needed)
 
 2. **Installation**
    ```bash
