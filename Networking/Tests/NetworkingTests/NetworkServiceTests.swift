@@ -184,6 +184,21 @@ final class NetworkServiceTests: XCTestCase {
     }
   }
 
+  func test_request_whenError_throw404() async {
+    // give
+    self.mockSession.mockResponse = (Data(), HTTPURLResponse(url: self.configuration.baseURL, statusCode: 404, httpVersion: nil, headerFields: nil)!)
+
+    // when and then
+    do {
+      let _: TestResponse = try await sut.request(TestTarget())
+      XCTFail("Expected error to be thrown")
+    } catch let error as NetworkError {
+      XCTAssertEqual(error, NetworkError.httpError(statusCode: 404, data: nil))
+    } catch {
+      XCTAssertFalse(error is NetworkError)
+    }
+  }
+
   // MARK: - Interceptor Tests
 
   func test_request_interceptsRequest() async throws {
