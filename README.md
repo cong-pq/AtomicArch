@@ -6,56 +6,57 @@ Atomic-B is a modern iOS application that demonstrates clean architecture princi
 
 [Watch Demo Video](https://raw.githubusercontent.com/congpq98/AtomicB/main/Resources/demo.mp4)
 
-
 ## 🏗 Architecture
 
-The project follows Clean Architecture principles with a clear separation of concerns:
+The project follows Clean Architecture principles with a clear separation of concerns across four distinct layers:
 
 ### Core Layers
 
 1. **Presentation Layer** (`Features/`)
-   - UIKit-based views
-   - ViewModels for state management
-   - Coordinators for navigation
-   - Builders for dependency injection
+   - UIKit-based views and view controllers
+   - ViewModels for state management using Combine
+   - Coordinators for navigation flow management
+   - Builders for dependency injection and view creation
 
 2. **Domain Layer** (`Domain/`)
-   - Use cases (business logic)
-   - Entity models
+   - Use case protocols and implementations
+   - Domain entities (pure business models)
    - Repository interfaces
+   - Domain errors and validation
 
 3. **Data Layer** (`Data/`)
    - Repository implementations
-   - Data sources
-   - Data models
+   - Data models (API response models)
+   - API endpoints and network configuration
+   - Data transformation logic
 
 4. **Infrastructure Layer**
-   - `Networking/`: API client and network utilities
+   - `Networking/`: HTTP client and network utilities
    - `AtomicLogger/`: Logging system
-   - `AtomicCore/`: Core utilities and extensions
+   - `AtomicCore/`: Core utilities, protocols, and extensions
 
 ### Key Components
 
 ```mermaid
 classDiagram
-    direction LR
+    direction TB
 
     %% Presentation Layer - ViewModels
     class ListUserGitHubViewModel {
         -viewState: ViewState
         -users: [UserEntity]
-        -userUseCase: UserUseCaseProtocol
+        -userUseCase: UserUseCase
         +transform(input: Input) Output
-        +loadUsers() async
-        +loadMoreUsers() async
-        +refreshUsers() async
+        +loadUsers(since: Int) async
+        +loadMoreIfNeeded(for: UserEntity)
     }
     class UserDetailViewModel {
         -viewState: ViewState
         -user: UserDetailEntity?
-        -userUseCase: UserUseCaseProtocol
+        -userUseCase: UserUseCase
+        -username: String
         +transform(input: Input) Output
-        +loadUser(username: String) async
+        +loadUser() async
     }
 
     %% Presentation Layer - ViewControllers
@@ -68,40 +69,7 @@ classDiagram
         +delegate: UserDetailViewControllerDelegate?
     }
 
-    %% Presentation Layer - Coordinators & Router
-    class Coordinator {
-        <<protocol>>
-        +children: [Coordinator]
-        +router: Router
-        +present(animated: Bool, onDismissed: (() -> Void)?)
-        +dismiss(animated: Bool)
-        +presentChild(_ child: Coordinator, animated: Bool, onDismissed: (() -> Void)?)
-    }
-    class Router {
-        <<protocol>>
-        +present(_ viewController: UIViewController, animated: Bool)
-        +present(_ viewController: UIViewController, animated: Bool, onDismissed: (() -> Void)?)
-        +dismiss(animated: Bool)
-    }
-
-    class ListUserGitHubCoordinatorDelegate {
-        <<protocol>>
-        +listUserGitHubCoordinatorDidFinish(_ coordinator: ListUserGitHubCoordinator)
-    }
-    class UserDetailCoordinatorDelegate {
-        <<protocol>>
-        +userDetailCoordinatorDidFinish(_ coordinator: UserDetailCoordinator)
-    }
-
-    class ListUserGitHubViewControllerDelegate {
-        <<protocol>>
-        +didSelectUser(_ user: UserEntity)
-    }
-    class UserDetailViewControllerDelegate {
-        <<protocol>>
-        +userDetailViewControllerDidFinish(_ viewController: UserDetailViewController)
-    }
-
+    %% Presentation Layer - Coordinators
     class ListUserGitHubCoordinator {
         -children: [Coordinator]
         -router: Router
@@ -121,15 +89,15 @@ classDiagram
     }
 
     %% Domain Layer - Protocols and Entities
-    class UserUseCaseProtocol {
+    class UserUseCase {
         <<protocol>>
-        +getListUser(perPage: Int, since: Int) [UserEntity]
-        +getUser(username: String) UserDetailEntity
+        +getListUser(perPage: Int, since: Int) async throws [UserEntity]
+        +getUser(with loginUsername: String) async throws UserDetailEntity
     }
     class UserRepositoryProtocol {
         <<protocol>>
-        +getListUser(perPage: Int, since: Int) [UserEntity]
-        +getUser(username: String) UserDetailEntity
+        +getListUser(perPage: Int, since: Int) async throws [UserEntity]
+        +getUser(with loginUsername: String) async throws UserDetailEntity
     }
     class UserEntity {
         -id: UUID
@@ -153,23 +121,56 @@ classDiagram
     }
 
     %% Data Layer - Implementations
-    class UserUseCase {
+    class UserUseCaseImpl {
         -repository: UserRepositoryProtocol
+        +getListUser(perPage: Int, since: Int) async throws [UserEntity]
+        +getUser(with loginUsername: String) async throws UserDetailEntity
     }
     class UserRepository {
         -networkService: NetworkServiceProtocol
+        +getListUser(perPage: Int, since: Int) async throws [UserEntity]
+        +getUser(with loginUsername: String) async throws UserDetailEntity
     }
 
-    %% Infrastructure Layer (Networking Module)
+    %% Data Layer - Models and Endpoints
+    class UserResponse {
+        -id: Int
+        -login: String?
+        -avatarUrl: String?
+        -htmlUrl: String?
+        +toDomain() UserEntity
+    }
+    class UserDetailResponse {
+        -id: Int
+        -login: String?
+        -name: String?
+        -company: String?
+        -blog: String?
+        -location: String?
+        -email: String?
+        -bio: String?
+        -publicRepos: Int?
+        -publicGists: Int?
+        -followers: Int?
+        -following: Int?
+        +toDomain() UserDetailEntity
+    }
+    class UserEndpoint {
+        +getListUser(Int, Int)
+        +getUserDetail(String)
+    }
+
+    %% Infrastructure Layer
     class NetworkServiceProtocol {
         <<protocol>>
-        +request<T: Decodable>(_ target: Target) T
+        +request<T: Decodable>(_ target: Target) async throws T
     }
     class Target {
-        -path: String
-        -method: HTTPMethod
-        -task: NetworkTask
-        -parameters: [String: Any]?
+        <<protocol>>
+        +path: String
+        +method: HTTPMethod
+        +task: Task
+        +headers: [String: String]
     }
     class NetworkError {
         <<enum>>
@@ -179,133 +180,175 @@ classDiagram
         +decodingError
         +unknown
     }
-    class AtomicLogger {
-        +log(level: LogLevel, message: String, metadata: [String: String]?)
-    }
 
     %% Relationships
     ListUserGitHubViewController ..> ListUserGitHubViewModel : uses
     UserDetailViewController ..> UserDetailViewModel : uses
 
-    ListUserGitHubViewModel ..> UserUseCaseProtocol : uses
-    UserDetailViewModel ..> UserUseCaseProtocol : uses
+    ListUserGitHubViewModel ..> UserUseCase : uses
+    UserDetailViewModel ..> UserUseCase : uses
 
-    UserUseCase ..|> UserUseCaseProtocol : implements
-    UserUseCase --> UserRepositoryProtocol : uses
+    UserUseCaseImpl ..|> UserUseCase : implements
+    UserUseCaseImpl --> UserRepositoryProtocol : uses
 
     UserRepository ..|> UserRepositoryProtocol : implements
     UserRepository --> NetworkServiceProtocol : uses
+
+    UserRepository --> UserEndpoint : uses
+    UserRepository --> UserResponse : transforms
+    UserRepository --> UserDetailResponse : transforms
+
+    UserResponse --> UserEntity : toDomain()
+    UserDetailResponse --> UserDetailEntity : toDomain()
 
     NetworkServiceProtocol ..> Target : defines request target
     NetworkServiceProtocol ..> NetworkError : throws
 
     ListUserGitHubCoordinator ..|> Coordinator : implements
-    ListUserGitHubCoordinator --> Router : uses (via protocol)
-    ListUserGitHubCoordinator --> UserUseCase : uses (concrete)
+    ListUserGitHubCoordinator --> Router : uses
+    ListUserGitHubCoordinator --> UserUseCase : uses
     ListUserGitHubCoordinator --> ListUserGitHubViewController : presents
-    ListUserGitHubCoordinator --o UserDetailCoordinator : presents new child
+    ListUserGitHubCoordinator --o UserDetailCoordinator : presents child
     ListUserGitHubCoordinator ..> ListUserGitHubCoordinatorDelegate : delegates to
-    ListUserGitHubCoordinator ..> ListUserGitHubViewControllerDelegate : acts as delegate for
 
     UserDetailCoordinator ..|> Coordinator : implements
-    UserDetailCoordinator --> Router : uses (via protocol)
-    UserDetailCoordinator --> UserUseCase : uses (concrete)
+    UserDetailCoordinator --> Router : uses
+    UserDetailCoordinator --> UserUseCase : uses
     UserDetailCoordinator --> UserDetailViewController : presents
     UserDetailCoordinator ..> UserDetailCoordinatorDelegate : delegates to
-    UserDetailCoordinator ..> UserDetailViewControllerDelegate : acts as delegate for
 
     Coordinator o-- Coordinator : manages children
-
-    UserEntity <.. UserUseCaseProtocol : returns
-    UserDetailEntity <.. UserUseCaseProtocol : returns
-    
-    UserEntity <.. UserRepositoryProtocol : returns
-    UserDetailEntity <.. UserRepositoryProtocol : returns
-
-    AtomicLogger <-- NetworkServiceProtocol : logs errors
 ```
-
-This diagram provides a clear visual representation of your `Atomic-B` project's architecture, showing the relationships and responsibilities of key components across different layers: Presentation, Domain, Data, and Infrastructure.
 
 ## 🚀 Features
 
 ### User Management
-- List GitHub users with pagination
-- View detailed user profiles
-- Asynchronous image loading
-- Error handling and retry mechanisms
+- **User List**: Display GitHub users with infinite scroll pagination
+- **User Details**: View comprehensive user profiles with detailed information
+- **Asynchronous Loading**: Efficient image loading and data fetching
+- **Error Handling**: Comprehensive error states with retry mechanisms
+- **State Management**: Reactive UI updates using Combine framework
 
 ### Technical Features
-- UIKit-based UI
-- Combine for reactive programming
-- Async/await for concurrency
-- Dependency injection
-- Unit testing
-- CI/CD integration
+- **Clean Architecture**: Strict separation of concerns across layers
+- **Protocol-Oriented Design**: Dependency inversion through protocols
+- **Async/Await**: Modern concurrency patterns throughout the app
+- **Combine Integration**: Reactive programming for state management
+- **Dependency Injection**: Builder pattern for clean dependency management
+- **Coordinator Pattern**: Clean navigation flow management
+- **Unit Testing**: Comprehensive test coverage with mocking
 
 ## 📦 Project Structure
 
 ```
 Atomic-B/
-├── Application/          # App configuration and setup
-├── Features/            # Feature modules
+├── Application/          # App lifecycle and configuration
+│   ├── AppDelegate.swift
+│   ├── SceneDelegate.swift
+│   ├── AppConfig.swift
+│   └── Environment.swift
+├── Features/            # Feature modules (Presentation Layer)
 │   └── Users/          # User-related features
 │       ├── List/       # User list feature
+│       │   ├── ListUserGitHubViewController.swift
+│       │   ├── ListUserGitHubViewModel.swift
+│       │   ├── ListUserGitHubCoordinator.swift
+│       │   ├── ListUserViewControllerBuilder.swift
+│       │   └── UserCell.swift
 │       ├── Detail/     # User detail feature
+│       │   ├── UserDetailViewController.swift
+│       │   ├── UserDetailViewModel.swift
+│       │   ├── UserDetailCoordinator.swift
+│       │   └── UserDetailViewControllerBuilder.swift
 │       └── Builders/   # View builders
-├── Domain/             # Business logic and entities
+│           └── ViewControllerBuilder.swift
+├── Domain/             # Business logic (Domain Layer)
+│   ├── Models/         # Domain entities
+│   │   ├── UserEntity.swift
+│   │   ├── UserDetailEntity.swift
+│   │   ├── DomainError.swift
+│   │   └── UserValidator.swift
+│   └── UseCase/        # Business logic and protocols
+│       ├── UserUseCase.swift
+│       ├── UserUseCaseImpl.swift
+│       └── UserRepositoryProtocol.swift
 ├── Data/              # Data layer implementation
-├── Networking/        # Networking module (with its own tests)
-├── Atomic-BTests/      # Main app test target
-│   ├── Unit/
-│   ├── Helpers/
-│   └── Mocks/
-└── Base.lproj/        # Localization resources
+│   ├── Models/        # Data models (API responses)
+│   │   ├── User.swift
+│   │   └── UserDetail.swift
+│   ├── Repository/    # Repository implementations
+│   │   └── UserRepository.swift
+│   ├── Endpoints/     # API endpoint definitions
+│   │   └── UserEndpoint.swift
+│   └── Interceptor/   # Network interceptors
+│       └── LoggingInterceptor.swift
+├── Router/            # Navigation infrastructure
+│   └── SceneRouter.swift
+├── Networking/        # Networking module (separate package)
+├── AtomicLogger/      # Logging module (separate package)
+├── AtomicCore/        # Core utilities (separate package)
+└── Atomic-BTests/     # Test suite
+    ├── Unit/
+    │   └── ViewModel/
+    │       ├── ListUserGitHubViewModelTests.swift
+    │       └── UserDetailViewModelTests.swift
+    ├── Helpers/
+    └── Mocks/
+        └── MockUserUseCase.swift
 ```
 
 ## 🛠 Technical Stack
 
 - **Language**: Swift 5.9+
-- **UI Framework**: UIKit
-- **Architecture**: Clean Architecture
-- **State Management**: Combine
+- **UI Framework**: UIKit with programmatic UI
+- **Architecture**: Clean Architecture with MVVM
+- **State Management**: Combine framework
 - **Networking**: URLSession with async/await
-- **Testing**: XCTest
+- **Dependency Injection**: Builder pattern
+- **Navigation**: Coordinator pattern
+- **Testing**: XCTest with comprehensive mocking
 - **Dependency Management**: Swift Package Manager
 - **Code Quality**: SwiftLint, SwiftFormat
 
 ## 🧪 Testing Strategy
 
-The project implements a layered and modular testing strategy:
+The project implements a comprehensive testing strategy focused on business logic and user interactions:
 
 ### 1. Unit Tests
-- **ViewModel Tests**: State management, user interaction, error handling, and pagination logic.
+- **ViewModel Tests**: State management, user interactions, error handling, and pagination logic
+- **Use Case Tests**: Business logic validation and data transformation
+- **Repository Tests**: Data layer integration and error handling
 
-### 4. Networking Module Tests
-- All low-level network protocol, error, and response handling are tested within the `Networking` module itself. This project does **not** duplicate those tests, but instead focuses on integration and business logic.
-
-### 5. Test Infrastructure
-- **Helpers**: Common test data generators and utilities.
-- **Mocks**: For repositories, use cases, and services.
-
-### 6. Test Organization
-
+### 2. Test Organization
 ```
 Atomic-BTests/
 ├── Unit/
 │   ├── ViewModel/
+│   │   ├── ListUserGitHubViewModelTests.swift
+│   │   └── UserDetailViewModelTests.swift
+│   ├── UseCase/
+│   └── Repository/
 ├── Helpers/
+│   └── TestData.swift
 └── Mocks/
+    └── MockUserUseCase.swift
 ```
 
-### 7. Running Tests
+### 3. Testing Principles
+- **Isolation**: Each test is independent with proper mocking
+- **Coverage**: Focus on business logic and user interactions
+- **Maintainability**: Clear test structure with descriptive names
+- **Performance**: Fast execution with minimal dependencies
+
+### 4. Running Tests
 
 ```bash
 # Run all tests
 xcodebuild test -scheme Atomic-B -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
-```
 
-> **Note:** The Networking module has its own test suite. This project focuses on testing business logic, integration, and UI, not duplicating low-level network tests.
+# Run specific test target
+xcodebuild test -scheme Atomic-B -only-testing:Atomic-BTests/ListUserGitHubViewModelTests -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
+```
 
 ## 🔄 CI/CD Pipeline
 
@@ -316,18 +359,24 @@ The project uses GitHub Actions for continuous integration:
    - Linting (SwiftLint)
    - Basic tests
 
+2. **Pull Request Checks**
+   - Automated testing
+   - Code quality checks
+   - Build verification
+
 ## 📚 Documentation
 
-- Architecture documentation
-- API documentation
-- Testing guidelines
-- Contribution guidelines
+- **Architecture Documentation**: This README provides comprehensive architecture overview
+- **API Documentation**: Inline documentation for all public APIs
+- **Testing Guidelines**: Clear testing patterns and best practices
+- **Contribution Guidelines**: Development workflow and standards
 
 ## 🔧 Development Setup
 
 1. **Prerequisites**
    - Xcode 15.0+
    - Swift 5.9+
+   - iOS 18.5+ Simulator
 
 2. **Installation**
    ```bash
@@ -336,7 +385,12 @@ The project uses GitHub Actions for continuous integration:
    xcodebuild -resolvePackageDependencies
    ```
 
-3. **Running Tests**
+3. **Running the App**
+   ```bash
+   xcodebuild -scheme Atomic-B -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' build
+   ```
+
+4. **Running Tests**
    ```bash
    xcodebuild test -scheme Atomic-B -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
    ```
@@ -345,18 +399,26 @@ The project uses GitHub Actions for continuous integration:
 
 The project follows strict code style guidelines:
 
-- SwiftLint rules for code consistency
-- SwiftFormat for automatic formatting
-- Documentation comments for public APIs
-- Clear naming conventions
+- **SwiftLint**: Enforces code consistency and best practices
+- **SwiftFormat**: Automatic code formatting
+- **Documentation**: Comprehensive inline documentation for public APIs
+- **Naming Conventions**: Clear and descriptive naming throughout
+- **Architecture Patterns**: Consistent use of Clean Architecture principles
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow Clean Architecture principles
+- Write comprehensive unit tests
+- Maintain code documentation
+- Use SwiftLint and SwiftFormat
+- Follow the established naming conventions
 
 ## 📄 License
 

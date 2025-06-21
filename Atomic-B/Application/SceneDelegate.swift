@@ -6,12 +6,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   private var coordinator: ListUserGitHubCoordinator?
 
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
-    guard let windowScene = scene as? UIWindowScene else { return }
-    self.window = UIWindow(windowScene: windowScene)
+    guard let windowScene = (scene as? UIWindowScene) else { return }
 
-    let router = SceneRouter(window: window!)
+    let window = UIWindow(windowScene: windowScene)
+    self.window = window
+
+    let router = SceneRouter(window: window)
     let userService = UserRepository(networkService: config.networkClient)
-    self.coordinator = ListUserGitHubCoordinator(router: router, userUseCase: userService)
+    let userUseCase = UserUseCaseImpl(repository: userService)
+    self.coordinator = ListUserGitHubCoordinator(router: router, userUseCase: userUseCase)
+
     self.coordinator?.present(animated: true, onDismissed: nil)
   }
 
