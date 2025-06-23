@@ -14,8 +14,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Select Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_16.0.app/Contents/Developer
+      - name: Set up latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
 
       - name: Resolve Swift Packages
         run: xcodebuild -resolvePackageDependencies -project Atomic-B.xcodeproj
@@ -28,14 +30,14 @@ jobs:
           xcodebuild clean build \
             -project Atomic-B.xcodeproj \
             -scheme Atomic-B \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' | xcpretty
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' | xcpretty
 
       - name: Run Tests
         run: |
           xcodebuild clean test \
             -project Atomic-B.xcodeproj \
             -scheme Atomic-B \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
             -enableCodeCoverage YES | xcpretty
 
       - name: Upload Test Results
