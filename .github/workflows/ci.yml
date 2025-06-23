@@ -1,0 +1,47 @@
+name: iOS CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app/Contents/Developer
+
+      - name: Resolve Swift Packages
+        run: xcodebuild -resolvePackageDependencies -project Atomic-B.xcodeproj
+
+      - name: Install xcpretty
+        run: gem install xcpretty
+
+      - name: Clean & Build
+        run: |
+          xcodebuild clean build \
+            -project Atomic-B.xcodeproj \
+            -scheme Atomic-B \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' | xcpretty
+
+      - name: Run Tests
+        run: |
+          xcodebuild clean test \
+            -project Atomic-B.xcodeproj \
+            -scheme Atomic-B \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' \
+            -enableCodeCoverage YES | xcpretty
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
