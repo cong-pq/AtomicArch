@@ -1,10 +1,10 @@
 import Foundation
 import Networking
 
-final class UserRepository: UserRepositoryProtocol {
-  private let networkService: NetworkServiceProtocol
+final class UserRepositoryImpl: UserRepository {
+  private let networkService: NetworkService
 
-  init(networkService: NetworkServiceProtocol) {
+  init(networkService: NetworkService) {
     self.networkService = networkService
   }
 

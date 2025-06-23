@@ -94,7 +94,7 @@ classDiagram
         +getListUser(perPage: Int, since: Int) async throws [UserEntity]
         +getUser(with loginUsername: String) async throws UserDetailEntity
     }
-    class UserRepositoryProtocol {
+    class UserRepository {
         <<protocol>>
         +getListUser(perPage: Int, since: Int) async throws [UserEntity]
         +getUser(with loginUsername: String) async throws UserDetailEntity
@@ -122,12 +122,12 @@ classDiagram
 
     %% Data Layer - Implementations
     class UserUseCaseImpl {
-        -repository: UserRepositoryProtocol
+        -repository: UserRepository
         +getListUser(perPage: Int, since: Int) async throws [UserEntity]
         +getUser(with loginUsername: String) async throws UserDetailEntity
     }
-    class UserRepository {
-        -networkService: NetworkServiceProtocol
+    class UserRepositoryImpl {
+        -networkService: NetworkService
         +getListUser(perPage: Int, since: Int) async throws [UserEntity]
         +getUser(with loginUsername: String) async throws UserDetailEntity
     }
@@ -161,7 +161,7 @@ classDiagram
     }
 
     %% Infrastructure Layer
-    class NetworkServiceProtocol {
+    class NetworkService {
         <<protocol>>
         +request<T: Decodable>(_ target: Target) async throws T
     }
@@ -189,20 +189,20 @@ classDiagram
     UserDetailViewModel ..> UserUseCase : uses
 
     UserUseCaseImpl ..|> UserUseCase : implements
-    UserUseCaseImpl --> UserRepositoryProtocol : uses
+    UserUseCaseImpl --> UserRepository : uses
 
-    UserRepository ..|> UserRepositoryProtocol : implements
-    UserRepository --> NetworkServiceProtocol : uses
+    UserRepositoryImpl ..|> UserRepository : implements
+    UserRepositoryImpl --> NetworkService : uses
 
-    UserRepository --> UserEndpoint : uses
-    UserRepository --> UserResponse : transforms
-    UserRepository --> UserDetailResponse : transforms
+    UserRepositoryImpl --> UserEndpoint : uses
+    UserRepositoryImpl --> UserResponse : transforms
+    UserRepositoryImpl --> UserDetailResponse : transforms
 
     UserResponse --> UserEntity : toDomain()
     UserDetailResponse --> UserDetailEntity : toDomain()
 
-    NetworkServiceProtocol ..> Target : defines request target
-    NetworkServiceProtocol ..> NetworkError : throws
+    NetworkService ..> Target : defines request target
+    NetworkService ..> NetworkError : throws
 
     ListUserGitHubCoordinator ..|> Coordinator : implements
     ListUserGitHubCoordinator --> Router : uses
@@ -263,25 +263,27 @@ Atomic-B/
 │       └── Builders/   # View builders
 │           └── ViewControllerBuilder.swift
 ├── Domain/             # Business logic (Domain Layer)
-│   ├── Models/         # Domain entities
+│   ├── Entities/       # Domain entities
 │   │   ├── UserEntity.swift
-│   │   ├── UserDetailEntity.swift
-│   │   ├── DomainError.swift
-│   │   └── UserValidator.swift
+│   │   └── UserDetailEntity.swift
+│   ├── Interfaces/     # Abstraction for data layer
+│   │   └── Repositories/
+│   │       └── UserRepository.swift
 │   └── UseCase/        # Business logic and protocols
-│       ├── UserUseCase.swift
-│       ├── UserUseCaseImpl.swift
-│       └── UserRepositoryProtocol.swift
+│       ├── Protocol/
+│       │   └── UserUseCase.swift
+│       └── UserUseCaseImpl.swift
 ├── Data/              # Data layer implementation
 │   ├── Models/        # Data models (API responses)
 │   │   ├── User.swift
 │   │   └── UserDetail.swift
 │   ├── Repository/    # Repository implementations
-│   │   └── UserRepository.swift
-│   ├── Endpoints/     # API endpoint definitions
-│   │   └── UserEndpoint.swift
-│   └── Interceptor/   # Network interceptors
-│       └── LoggingInterceptor.swift
+│   │   └── UserRepositoryImpl.swift
+│   └── Network/       # Network-related components
+│       ├── Endpoint/
+│       │   └── UserEndpoint.swift
+│       └── Interceptor/
+│           └── LoggingInterceptor.swift
 ├── Router/            # Navigation infrastructure
 │   └── SceneRouter.swift
 ├── Networking/        # Networking module (separate package)

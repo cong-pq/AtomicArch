@@ -248,12 +248,12 @@ final class ListUserGitHubViewController: UIViewController, View {
       }
       self.refreshControl.endRefreshing()
 
-    case let .error(error):
+    case .error:
       self.animateStateTransition {
         self.tableView.isHidden = true
         self.loadingIndicator.stopAnimating()
         self.errorView.isHidden = false
-        self.errorLabel.text = error.localizedDescription
+        self.errorLabel.text = "A server error occurred. Please try again"
       }
       self.refreshControl.endRefreshing()
     }

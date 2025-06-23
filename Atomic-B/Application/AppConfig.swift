@@ -3,7 +3,7 @@ import Foundation
 import Networking
 
 struct AppConfig {
-  let networkClient: NetworkServiceProtocol
+  let networkClient: NetworkService
   let logger: LoggerProtocol = {
     #if DEBUG
       return LoggerImpl(label: "GitHubUsers_UAT")
@@ -17,11 +17,11 @@ struct AppConfig {
       logger: logger
     )
     let interceptorChain = NetworkInterceptorChain(interceptors: [logginNetworkIntercetor])
-    let configuration = NetworkService.Configuation(
+    let configuration = NetworkServiceImpl.Configuation(
       baseURL: Environment.baseURL,
       defaultHeaders: ["Content-Type": "application/json"]
     )
-    self.networkClient = NetworkService(
+    self.networkClient = NetworkServiceImpl(
       configuration: configuration,
       session: URLSession.shared,
       interceptorChain: interceptorChain,

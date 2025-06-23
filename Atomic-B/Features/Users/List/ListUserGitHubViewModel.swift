@@ -9,7 +9,7 @@ final class ListUserGitHubViewModel: ViewModel, ViewModelType {
     case idle
     case loading
     case loaded([UserEntity])
-    case error(Error)
+    case error
   }
 
   struct Input {
@@ -80,7 +80,7 @@ final class ListUserGitHubViewModel: ViewModel, ViewModelType {
       }
     } catch {
       await MainActor.run {
-        self.viewState = .error(error)
+        self.viewState = .error
       }
     }
   }

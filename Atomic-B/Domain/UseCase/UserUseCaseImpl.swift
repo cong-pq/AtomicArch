@@ -1,35 +1,17 @@
 import Foundation
 
 final class UserUseCaseImpl: UserUseCase {
-  private let repository: UserRepositoryProtocol
+  private let repository: UserRepository
 
-  init(repository: UserRepositoryProtocol) {
+  init(repository: UserRepository) {
     self.repository = repository
   }
 
   func getListUser(perPage: Int, since: Int) async throws -> [UserEntity] {
-    // Validate pagination parameters
-    try UserValidator.validatePaginationParameters(perPage: perPage, since: since)
-
-    // Get users from repository
-    let users = try await repository.getListUser(perPage: perPage, since: since)
-
-    // Validate each user
-    try users.forEach { try UserValidator.validateUser($0) }
-
-    return users
+    return try await self.repository.getListUser(perPage: perPage, since: since)
   }
 
   func getUser(with loginUsername: String) async throws -> UserDetailEntity {
-    // Validate username
-    try UserValidator.validateUsername(loginUsername)
-
-    // Get user from repository
-    let user = try await repository.getUser(with: loginUsername)
-
-    // Validate user data
-    try UserValidator.validateUserDetail(user)
-
-    return user
+    return try await self.repository.getUser(with: loginUsername)
   }
 }
