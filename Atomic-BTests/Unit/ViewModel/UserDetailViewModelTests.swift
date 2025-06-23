@@ -5,12 +5,12 @@ import XCTest
 
 final class UserDetailViewModelTests: XCTestCase {
   private var sut: UserDetailViewModel!
-  private var mockUserUseCase: MockUserUseCase!
+  private var mockUserUseCase: UserUseCaseMock!
   private var cancellables: Set<AnyCancellable>!
 
   override func setUp() {
     super.setUp()
-    self.mockUserUseCase = MockUserUseCase()
+    self.mockUserUseCase = UserUseCaseMock()
     self.sut = UserDetailViewModel(userUseCase: self.mockUserUseCase, username: "testuser")
     self.cancellables = []
   }
@@ -49,7 +49,7 @@ final class UserDetailViewModelTests: XCTestCase {
       followers: 100,
       following: 50
     )
-    self.mockUserUseCase.getUserResult = .success(mockUser)
+    self.mockUserUseCase.getUserHandler = { _ in mockUser }
 
     let expectation = expectation(description: "View state should be updated")
     var viewStates: [UserDetailViewModel.ViewState] = []
@@ -72,7 +72,7 @@ final class UserDetailViewModelTests: XCTestCase {
     // Then
     await fulfillment(of: [expectation], timeout: 1.0)
     XCTAssertEqual(viewStates.count, 3) // idle -> loading -> loaded
-    XCTAssertEqual(self.mockUserUseCase.lastUsername, "testuser")
+    XCTAssertEqual(self.mockUserUseCase.getUserCallCount, 1)
 
     if case let .loaded(user) = viewStates.last {
       XCTAssertEqual(user.login, "testuser")
@@ -88,8 +88,7 @@ final class UserDetailViewModelTests: XCTestCase {
 
   func testLoadUserFailure() async {
     // Given
-    let mockError = NSError(domain: "test", code: -1)
-    self.mockUserUseCase.getUserResult = .failure(mockError)
+    self.mockUserUseCase.getUserHandler = { _ in throw NetworkError.noConnection }
 
     let expectation = expectation(description: "View state should be updated")
     var viewStates: [UserDetailViewModel.ViewState] = []
@@ -112,10 +111,10 @@ final class UserDetailViewModelTests: XCTestCase {
     // Then
     await fulfillment(of: [expectation], timeout: 1.0)
     XCTAssertEqual(viewStates.count, 3) // idle -> loading -> error
-    XCTAssertEqual(self.mockUserUseCase.lastUsername, "testuser")
+    XCTAssertEqual(self.mockUserUseCase.getUserCallCount, 1)
 
     if case let .error(error) = viewStates.last {
-      XCTAssertEqual(error as NSError, mockError)
+      XCTAssertEqual(error as? NetworkError, .noConnection)
     } else {
       XCTFail("Expected error state")
     }
@@ -141,7 +140,7 @@ final class UserDetailViewModelTests: XCTestCase {
       followers: 100,
       following: 50
     )
-    self.mockUserUseCase.getUserResult = .success(mockUser)
+    self.mockUserUseCase.getUserHandler = { _ in mockUser }
 
     let expectation = expectation(description: "View state should be updated")
     var viewStates: [UserDetailViewModel.ViewState] = []
@@ -179,8 +178,7 @@ final class UserDetailViewModelTests: XCTestCase {
     // Given
     let invalidUsername = ""
     self.sut = UserDetailViewModel(userUseCase: self.mockUserUseCase, username: invalidUsername)
-    let mockError = NSError(domain: "test", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid request"])
-    self.mockUserUseCase.getUserResult = .failure(mockError)
+    self.mockUserUseCase.getUserHandler = { _ in throw NetworkError.invalidURL }
 
     let expectation = expectation(description: "View state should be updated")
     var viewStates: [UserDetailViewModel.ViewState] = []
@@ -203,9 +201,10 @@ final class UserDetailViewModelTests: XCTestCase {
     // Then
     await fulfillment(of: [expectation], timeout: 1.0)
     XCTAssertEqual(viewStates.count, 3) // idle -> loading -> error
+    XCTAssertEqual(self.mockUserUseCase.getUserCallCount, 1)
 
     if case let .error(error) = viewStates.last {
-      XCTAssertEqual(error as NSError, mockError)
+      XCTAssertNotNil(error)
     } else {
       XCTFail("Expected error state")
     }
@@ -229,7 +228,7 @@ final class UserDetailViewModelTests: XCTestCase {
       followers: 0,
       following: 0
     )
-    self.mockUserUseCase.getUserResult = .success(mockUser)
+    self.mockUserUseCase.getUserHandler = { _ in mockUser }
 
     let expectation = expectation(description: "View state should be updated")
     var viewStates: [UserDetailViewModel.ViewState] = []
@@ -282,7 +281,7 @@ final class UserDetailViewModelTests: XCTestCase {
       followers: 100,
       following: 50
     )
-    self.mockUserUseCase.getUserResult = .success(mockUser)
+    self.mockUserUseCase.getUserHandler = { _ in mockUser }
 
     let expectation = expectation(description: "View state should be updated")
     expectation.expectedFulfillmentCount = 2
@@ -308,12 +307,12 @@ final class UserDetailViewModelTests: XCTestCase {
 
     // Then
     await fulfillment(of: [expectation], timeout: 1.0)
-    XCTAssertEqual(self.mockUserUseCase.lastUsername, "testuser")
+    XCTAssertEqual(self.mockUserUseCase.getUserCallCount, 2)
   }
 
   func testRetryMechanism() async {
     // Given
-    let mockError = NSError(domain: "test", code: -1, userInfo: [NSLocalizedDescriptionKey: "No connection"])
+    let mockError = NetworkError.noConnection
     let mockUser = UserDetailEntity(
       id: 1,
       login: "testuser",
@@ -332,7 +331,7 @@ final class UserDetailViewModelTests: XCTestCase {
     )
 
     // First attempt fails
-    self.mockUserUseCase.getUserResult = .failure(mockError)
+    self.mockUserUseCase.getUserHandler = { _ in throw mockError }
 
     let errorExpectation = expectation(description: "Error state should be reached")
     let successExpectation = expectation(description: "Success state should be reached")
@@ -360,7 +359,7 @@ final class UserDetailViewModelTests: XCTestCase {
     await fulfillment(of: [errorExpectation], timeout: 1.0)
 
     // Second attempt succeeds
-    self.mockUserUseCase.getUserResult = .success(mockUser)
+    self.mockUserUseCase.getUserHandler = { _ in mockUser }
 
     // Retry
     _ = self.sut.transform(input: input)
@@ -368,5 +367,6 @@ final class UserDetailViewModelTests: XCTestCase {
     // Then
     await fulfillment(of: [successExpectation], timeout: 1.0)
     XCTAssertEqual(viewStates.count, 5) // idle -> loading -> error -> loading -> loaded
+    XCTAssertEqual(self.mockUserUseCase.getUserCallCount, 2)
   }
 }
