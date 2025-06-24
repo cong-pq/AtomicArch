@@ -10,6 +10,7 @@ os.environ['LANG'] = 'en_US.UTF-8'
 
 # File paths (these should be updated according to your project structure)
 MAIN_SRC_PATH = "Atomic-B"
+MOCKS_PATH = "Atomic-BTests/Mocks"
 
 
 # Function to handle errors and stop script execution
@@ -31,21 +32,39 @@ def check_mockolo_installed():
 def generate_mocks(tool, header, src_path):
     print("Initializing mocks generation...")
 
-    # Prepare the command for mock generation (using provided tool, header, and paths)
-    command = [
-        tool,
-        '--header', header,
-        '--sourcefiles', f"{src_path}/Domain/UseCase/UserUseCase.swift",
-        '--destination', f"{src_path}/Mocks/UserUseCaseMocks.swift",
-        '--testable-imports', 'Atomic-B'
+    # List of protocols to generate mocks for, with their source and destination paths
+    targets = [
+        {
+            "protocol": "UserUseCase",
+            "source": f"{src_path}/Domain/UseCase/Protocol/UserUseCase.swift",
+            "destination": f"{MOCKS_PATH}/UserUseCaseMock.swift"
+        },
+        {
+            "protocol": "UserRepository",
+            "source": f"{src_path}/Domain/Interfaces/Repositories/UserRepository.swift",
+            "destination": f"{MOCKS_PATH}/UserRepositoryMock.swift"
+        }
     ]
 
-    # Run the command to generate mocks
-    try:
-        subprocess.run(command, check=True)
-        print("Mocks generated successfully.")
-    except subprocess.CalledProcessError as e:
-        error(f"Error during mock generation: {e}")
+    # Ensure the mocks directory exists before generating
+    os.makedirs(MOCKS_PATH, exist_ok=True)
+
+    # For each protocol, run Mockolo to generate the mock
+    for target in targets:
+        print(f"Generating mock for {target['protocol']}...")
+        command = [
+            tool,
+            '--header', header,
+            '--sourcefiles', target["source"],
+            '--destination', target["destination"],
+            '--testable-imports', 'Atomic_B'
+        ]
+        # This step runs Mockolo to generate the mock implementation for the protocol.
+        try:
+            subprocess.run(command, check=True)
+            print(f"{target['protocol']} mock generated successfully at {target['destination']}.")
+        except subprocess.CalledProcessError as e:
+            error(f"Error during mock generation for {target['protocol']}: {e}")
 
 
 # Function to generate the header with the current date
@@ -72,6 +91,7 @@ def main():
     # Generate mocks using the tool and header
     header = generate_header()
     generate_mocks(tool, header, MAIN_SRC_PATH)
+
 
 # Script entry point
 if __name__ == "__main__":

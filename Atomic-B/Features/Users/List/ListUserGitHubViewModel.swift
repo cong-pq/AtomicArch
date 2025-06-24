@@ -5,11 +5,26 @@ import Foundation
 final class ListUserGitHubViewModel: ViewModel, ViewModelType {
   // MARK: - Types
 
-  enum ViewState {
+  enum ViewState: Equatable {
     case idle
     case loading
     case loaded([UserEntity])
     case error
+
+    static func == (lhs: ViewState, rhs: ViewState) -> Bool {
+      switch (lhs, rhs) {
+      case (.idle, .idle):
+        return true
+      case (.loading, .loading):
+        return true
+      case let (.loaded(lhsUser), .loaded(rhsUser)):
+        return lhsUser == rhsUser
+      case (.error, .error):
+        return true
+      default:
+        return false
+      }
+    }
   }
 
   struct Input {
