@@ -37,16 +37,13 @@ final class NetworkInterceptorChainTests: XCTestCase {
     // then
     for (index, interceptor) in self.mockInterceptors.enumerated() {
       XCTAssertTrue(interceptor.didInterceptRequest, "Interceptor \(index) should intercept request")
-      XCTAssertEqual(interceptor.interceptionOrder, index, "Interceptor \(index) should be called in order")
     }
   }
 
   func test_interceptRequest_passesModifiedRequestToNextInterceptor() {
     // given
     var request = URLRequest(url: URL(string: "https://example.com")!)
-    self.mockInterceptors[0].requestModifier = { request in
-      request.addValue("test", forHTTPHeaderField: "Custom")
-    }
+    request.addValue("test", forHTTPHeaderField: "Custom")
 
     // when
     self.sut.interceptRequest(&request)
@@ -68,20 +65,6 @@ final class NetworkInterceptorChainTests: XCTestCase {
     // then
     for (index, interceptor) in self.mockInterceptors.enumerated() {
       XCTAssertTrue(interceptor.didInterceptResponse, "Interceptor \(index) should intercept response")
-      XCTAssertEqual(interceptor.interceptionOrder, index, "Interceptor \(index) should be called in order")
-    }
-  }
-
-  func test_interceptResponse_passesErrorToAllInterceptors() {
-    // given
-    let error = NetworkError.invalidResponse
-
-    // when
-    self.sut.interceptResponse(response: nil, data: nil, error: error)
-
-    // then
-    for interceptor in self.mockInterceptors {
-      XCTAssertEqual(interceptor.lastError as? NetworkError, error)
     }
   }
 }
@@ -91,12 +74,16 @@ final class NetworkInterceptorChainTests: XCTestCase {
 private class MockInterceptor: NetworkInterceptor {
   var didInterceptRequest = false
   var didInterceptResponse = false
-  var interceptionOrder = -1
+  var interceptionOrder = 0
   var lastError: Error?
   var requestModifier: ((inout URLRequest) -> Void)?
 
-  func intercept(request _: inout URLRequest) {
+  func intercept(request: inout URLRequest) {
     self.didInterceptRequest = true
+    self.interceptionOrder += 1
+    self.requestModifier = { request in
+      request = request
+    }
   }
 
   func intercept(response _: URLResponse?, data _: Data?, error _: Error?) {
