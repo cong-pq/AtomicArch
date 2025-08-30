@@ -25,32 +25,32 @@
 
 /* Begin PBXFileReference section */
 		244FBCD92E00586F0036E91C /* AtomicBTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AtomicBTestPlan.xctestplan; sourceTree = "<group>"; };
-		249AC6C32E001F92004B867A /* Atomic-B.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Atomic-B.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		249AC6D92E001F94004B867A /* Atomic-BTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Atomic-BTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		249AC6C32E001F92004B867A /* AtomicArch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AtomicArch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		249AC6D92E001F94004B867A /* AtomicArchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AtomicArchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		249AC6EB2E001F94004B867A /* Exceptions for "Atomic-B" folder in "Atomic-B" target */ = {
+		249AC6EB2E001F94004B867A /* Exceptions for "AtomicArch" folder in "AtomicArch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 249AC6C22E001F92004B867A /* Atomic-B */;
+			target = 249AC6C22E001F92004B867A /* AtomicArch */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		249AC6C52E001F92004B867A /* Atomic-B */ = {
+		249AC6C52E001F92004B867A /* AtomicArch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				249AC6EB2E001F94004B867A /* Exceptions for "Atomic-B" folder in "Atomic-B" target */,
+				249AC6EB2E001F94004B867A /* Exceptions for "AtomicArch" folder in "AtomicArch" target */,
 			);
-			path = "Atomic-B";
+			path = AtomicArch;
 			sourceTree = "<group>";
 		};
-		249AC6DC2E001F94004B867A /* Atomic-BTests */ = {
+		249AC6DC2E001F94004B867A /* AtomicArchTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Atomic-BTests";
+			path = AtomicArchTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -80,8 +80,8 @@
 			isa = PBXGroup;
 			children = (
 				244FBCD92E00586F0036E91C /* AtomicBTestPlan.xctestplan */,
-				249AC6C52E001F92004B867A /* Atomic-B */,
-				249AC6DC2E001F94004B867A /* Atomic-BTests */,
+				249AC6C52E001F92004B867A /* AtomicArch */,
+				249AC6DC2E001F94004B867A /* AtomicArchTests */,
 				249AC6C42E001F92004B867A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -89,8 +89,8 @@
 		249AC6C42E001F92004B867A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				249AC6C32E001F92004B867A /* Atomic-B.app */,
-				249AC6D92E001F94004B867A /* Atomic-BTests.xctest */,
+				249AC6C32E001F92004B867A /* AtomicArch.app */,
+				249AC6D92E001F94004B867A /* AtomicArchTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,9 +98,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		249AC6C22E001F92004B867A /* Atomic-B */ = {
+		249AC6C22E001F92004B867A /* AtomicArch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 249AC6EC2E001F94004B867A /* Build configuration list for PBXNativeTarget "Atomic-B" */;
+			buildConfigurationList = 249AC6EC2E001F94004B867A /* Build configuration list for PBXNativeTarget "AtomicArch" */;
 			buildPhases = (
 				249AC6BF2E001F92004B867A /* Sources */,
 				249AC6C02E001F92004B867A /* Frameworks */,
@@ -111,21 +111,21 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				249AC6C52E001F92004B867A /* Atomic-B */,
+				249AC6C52E001F92004B867A /* AtomicArch */,
 			);
-			name = "Atomic-B";
+			name = AtomicArch;
 			packageProductDependencies = (
 				242F23512E002C9F0000B941 /* Networking */,
 				242F23542E002CAF0000B941 /* AtomicCore */,
 				242F23572E002CC00000B941 /* AtomicLogger */,
 			);
 			productName = "Atomic-B";
-			productReference = 249AC6C32E001F92004B867A /* Atomic-B.app */;
+			productReference = 249AC6C32E001F92004B867A /* AtomicArch.app */;
 			productType = "com.apple.product-type.application";
 		};
-		249AC6D82E001F94004B867A /* Atomic-BTests */ = {
+		249AC6D82E001F94004B867A /* AtomicArchTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 249AC6F12E001F94004B867A /* Build configuration list for PBXNativeTarget "Atomic-BTests" */;
+			buildConfigurationList = 249AC6F12E001F94004B867A /* Build configuration list for PBXNativeTarget "AtomicArchTests" */;
 			buildPhases = (
 				249AC6D52E001F94004B867A /* Sources */,
 				249AC6D62E001F94004B867A /* Frameworks */,
@@ -137,13 +137,13 @@
 				249AC6DB2E001F94004B867A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				249AC6DC2E001F94004B867A /* Atomic-BTests */,
+				249AC6DC2E001F94004B867A /* AtomicArchTests */,
 			);
-			name = "Atomic-BTests";
+			name = AtomicArchTests;
 			packageProductDependencies = (
 			);
 			productName = "Atomic-BTests";
-			productReference = 249AC6D92E001F94004B867A /* Atomic-BTests.xctest */;
+			productReference = 249AC6D92E001F94004B867A /* AtomicArchTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -165,7 +165,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 249AC6BE2E001F92004B867A /* Build configuration list for PBXProject "Atomic-B" */;
+			buildConfigurationList = 249AC6BE2E001F92004B867A /* Build configuration list for PBXProject "AtomicArch" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -184,8 +184,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				249AC6C22E001F92004B867A /* Atomic-B */,
-				249AC6D82E001F94004B867A /* Atomic-BTests */,
+				249AC6C22E001F92004B867A /* AtomicArch */,
+				249AC6D82E001F94004B867A /* AtomicArchTests */,
 			);
 		};
 /* End PBXProject section */
@@ -228,7 +228,7 @@
 /* Begin PBXTargetDependency section */
 		249AC6DB2E001F94004B867A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 249AC6C22E001F92004B867A /* Atomic-B */;
+			target = 249AC6C22E001F92004B867A /* AtomicArch */;
 			targetProxy = 249AC6DA2E001F94004B867A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -242,7 +242,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Atomic-B/Info.plist";
+				INFOPLIST_FILE = AtomicArch/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -273,7 +273,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Atomic-B/Info.plist";
+				INFOPLIST_FILE = AtomicArch/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -298,7 +298,7 @@
 		};
 		249AC6EF2E001F94004B867A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 249AC6C52E001F92004B867A /* Atomic-B */;
+			baseConfigurationReferenceAnchor = 249AC6C52E001F92004B867A /* AtomicArch */;
 			baseConfigurationReferenceRelativePath = UATConfig.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -363,7 +363,7 @@
 		};
 		249AC6F02E001F94004B867A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 249AC6C52E001F92004B867A /* Atomic-B */;
+			baseConfigurationReferenceAnchor = 249AC6C52E001F92004B867A /* AtomicArch */;
 			baseConfigurationReferenceRelativePath = UATConfig.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -433,7 +433,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Atomic-B.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Atomic-B";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AtomicArch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AtomicArch";
 			};
 			name = Debug;
 		};
@@ -451,14 +451,14 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Atomic-B.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Atomic-B";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AtomicArch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AtomicArch";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		249AC6BE2E001F92004B867A /* Build configuration list for PBXProject "Atomic-B" */ = {
+		249AC6BE2E001F92004B867A /* Build configuration list for PBXProject "AtomicArch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				249AC6EF2E001F94004B867A /* Debug */,
@@ -467,7 +467,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		249AC6EC2E001F94004B867A /* Build configuration list for PBXNativeTarget "Atomic-B" */ = {
+		249AC6EC2E001F94004B867A /* Build configuration list for PBXNativeTarget "AtomicArch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				249AC6ED2E001F94004B867A /* Debug */,
@@ -476,7 +476,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		249AC6F12E001F94004B867A /* Build configuration list for PBXNativeTarget "Atomic-BTests" */ = {
+		249AC6F12E001F94004B867A /* Build configuration list for PBXNativeTarget "AtomicArchTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				249AC6F22E001F94004B867A /* Debug */,
