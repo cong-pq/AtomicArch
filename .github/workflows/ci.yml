@@ -20,7 +20,7 @@ jobs:
           xcode-version: latest
 
       - name: Resolve Swift Packages
-        run: xcodebuild -resolvePackageDependencies -project Atomic-B.xcodeproj
+        run: xcodebuild -resolvePackageDependencies -project AtomicArch.xcodeproj
 
       - name: Install xcpretty
         run: gem install xcpretty
@@ -28,15 +28,15 @@ jobs:
       - name: Clean & Build
         run: |
           xcodebuild clean build \
-            -project Atomic-B.xcodeproj \
-            -scheme Atomic-B \
+            -project AtomicArch.xcodeproj \
+            -scheme AtomicArch \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' | xcpretty
 
       - name: Run Tests
         run: |
           xcodebuild clean test \
-            -project Atomic-B.xcodeproj \
-            -scheme Atomic-B \
+            -project AtomicArch.xcodeproj \
+            -scheme AtomicArch \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
             -enableCodeCoverage YES | xcpretty
 
