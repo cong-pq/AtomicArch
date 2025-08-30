@@ -1,6 +1,6 @@
-# Atomic-B
+# AtomicArch
 
-Atomic-B is a modern iOS application that demonstrates clean architecture principles and best practices in Swift development. The project showcases a well-structured, modular approach to building iOS applications with a focus on maintainability, testability, and scalability.
+AtomicArch is a modern iOS application that demonstrates clean architecture principles and best practices in Swift development. The project showcases a well-structured, modular approach to building iOS applications with a focus on maintainability, testability, and scalability.
 
 ## 🎥 Demo
 
@@ -241,7 +241,7 @@ classDiagram
 ## 📦 Project Structure
 
 ```
-Atomic-B/
+AtomicArch/
 ├── Application/          # App lifecycle and configuration
 │   ├── AppDelegate.swift
 │   ├── SceneDelegate.swift
@@ -289,7 +289,7 @@ Atomic-B/
 ├── Networking/        # Networking module (separate package)
 ├── AtomicLogger/      # Logging module (separate package)
 ├── AtomicCore/        # Core utilities (separate package)
-└── Atomic-BTests/     # Test suite
+└── AtomicArchTests/     # Test suite
     ├── Unit/
     │   └── ViewModel/
     │       ├── ListUserGitHubViewModelTests.swift
@@ -323,7 +323,7 @@ The project implements a comprehensive testing strategy focused on business logi
 
 ### 2. Test Organization
 ```
-Atomic-BTests/
+AtomicArchTests/
 ├── Unit/
 │   ├── ViewModel/
 │   │   ├── ListUserGitHubViewModelTests.swift
@@ -346,10 +346,10 @@ Atomic-BTests/
 
 ```bash
 # Run all tests
-xcodebuild test -scheme Atomic-B -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
+xcodebuild test -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 
 # Run specific test target
-xcodebuild test -scheme Atomic-B -only-testing:Atomic-BTests/ListUserGitHubViewModelTests -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
+xcodebuild test -scheme AtomicArch -only-testing:AtomicArchTests/ListUserGitHubViewModelTests -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 ```
 
 ## 🔄 CI/CD Pipeline
@@ -389,12 +389,12 @@ The project uses GitHub Actions for continuous integration:
 
 3. **Running the App**
    ```bash
-   xcodebuild -scheme Atomic-B -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' build
+   xcodebuild -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5' build
    ```
 
 4. **Running Tests**
    ```bash
-   xcodebuild test -scheme Atomic-B -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
+   xcodebuild test -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
    ```
 
 ## 📝 Code Style
