@@ -4,7 +4,7 @@ AtomicArch is a modern iOS application that demonstrates clean architecture prin
 
 ## 🎥 Demo
 
-[Watch Demo Video](https://raw.githubusercontent.com/congpq98/AtomicB/main/Resources/demo.mp4)
+[Watch Demo Video](https://raw.githubusercontent.com/phanquangcong/AtomicArch/main/Resources/demo.mp4)
 
 ## 🏗 Architecture
 
@@ -382,8 +382,8 @@ The project uses GitHub Actions for continuous integration:
 
 2. **Installation**
    ```bash
-   git clone https://github.com/congpq98/AtomicB.git
-   cd AtomicB
+   git clone https://github.com/phanquangcong/AtomicArch.git
+   cd AtomicArch
    xcodebuild -resolvePackageDependencies
    ```
 
@@ -396,24 +396,6 @@ The project uses GitHub Actions for continuous integration:
    ```bash
    xcodebuild test -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
    ```
-
-## 📝 Code Style
-
-The project follows strict code style guidelines:
-
-- **SwiftLint**: Enforces code consistency and best practices
-- **SwiftFormat**: Automatic code formatting
-- **Documentation**: Comprehensive inline documentation for public APIs
-- **Naming Conventions**: Clear and descriptive naming throughout
-- **Architecture Patterns**: Consistent use of Clean Architecture principles
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ### Development Guidelines
 - Follow Clean Architecture principles
