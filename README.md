@@ -2,9 +2,13 @@
 
 AtomicArch is a modern iOS application that demonstrates clean architecture principles and best practices in Swift development. The project showcases a well-structured, modular approach to building iOS applications with a focus on maintainability, testability, and scalability.
 
+## ✨ Project Goal
+
+The primary goal of **AtomicArch** is to serve as a reference implementation of Clean Architecture in a modern iOS application. It is designed to be a practical guide for developers looking to build scalable, maintainable, and testable apps using **Swift**, **Combine**, and modern concurrency.
+
 ## 🏗 Architecture
 
-The project follows Clean Architecture principles with a clear separation of concerns across four distinct layers:
+The project follows **Clean Architecture principles** with a clear separation of concerns across four distinct layers:
 
 ### Core Layers
 
@@ -408,4 +412,4 @@ The project uses GitHub Actions for continuous integration:
 
 ## 📄 License
 
-This project is licensed under the terms of the license included in the `LICENSE` file.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
