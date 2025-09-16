@@ -14,10 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: SwiftLint
-        uses: norio-nomura/action-swiftlint@3.2.1
-        with:
-          args: --strict
+      - name: Install SwiftLint
+        run: brew install swiftlint
+        
+      - name: Run SwiftLint
+        run: swiftlint lint --strict --config .swiftlint.yml
   
   build-and-test:
     name: Build and Test
@@ -52,4 +53,4 @@ jobs:
         with:
           name: TestResults
           path: |
-            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
+            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresultGS
