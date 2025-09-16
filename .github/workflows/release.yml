@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
+          
+      - name: Resolve Swift Packages
+        run: xcodebuild -resolvePackageDependencies -project AtomicArch.xcodeproj
+          
+      - name: Install xcpretty
+        run: gem install xcpretty
+
+      - name: Build and test
+        run: |
+          xcodebuild clean test \
+            -project AtomicArch.xcodeproj \
+            -scheme AtomicArch \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -enableCodeCoverage YES | xcpretty
+          
+  create-release:
+    name: Create Release
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "categories": [
+                {
+                  "title": "## 🚀 Features",
+                  "labels": ["feature", "enhancement"]
+                },
+                {
+                  "title": "## 🐛 Fixes",
+                  "labels": ["fix", "bug"]
+                }
+              ]
+            }
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: AtomicArch ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            # AtomicArch ${{ steps.get_version.outputs.VERSION }}
+            
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Architecture
+            Clean Architecture with MVVM pattern, Combine for state management, and coordinator-based navigation.
+            
+            ## Features
+            - **User List**: Display GitHub users with infinite scroll pagination
+            - **User Details**: View comprehensive user profiles
+            - **Async/Await**: Modern Swift concurrency patterns
+            - **Combine Integration**: Reactive programming for state management
+            - **Coordinator Pattern**: Clean navigation flow management
+            
+            ## Requirements
+            - iOS 18.5+
+            - Xcode 15.0+
+            - Swift 5.9+
+            
+            ## Installation
+            ```bash
+            git clone https://github.com/phanquangcong/AtomicArch.git
+            cd AtomicArch
+            xcodebuild -resolvePackageDependencies
+            ```
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
