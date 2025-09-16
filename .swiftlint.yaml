@@ -45,8 +45,12 @@ file_length:
   warning: 500
   error: 1200
 
+type_body_length:
+  warning: 350
+  error: 400
+
 nesting:
   type_level:
     warning: 3
 
-reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, codeclimate, junit, html, emoji, sonarqube, markdown, github-actions-logging)
+reporter: "xcode"

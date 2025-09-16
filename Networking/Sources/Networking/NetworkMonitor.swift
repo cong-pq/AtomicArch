@@ -46,17 +46,16 @@ public final class NetworkMonitor: NetworkMonitoring {
   private func handlePathUpdate(_ path: NWPath) {
     self.isConnected = path.status == .satisfied
 
-    let newConnectionType: ConnectionType
-    if path.usesInterfaceType(.wifi) {
-      newConnectionType = .wifi
+    let newConnectionType: ConnectionType = if path.usesInterfaceType(.wifi) {
+      .wifi
     } else if path.usesInterfaceType(.cellular) {
-      newConnectionType = .cellular
+      .cellular
     } else if path.usesInterfaceType(.wiredEthernet) {
-      newConnectionType = .ethernet
+      .ethernet
     } else if path.status == .satisfied {
-      newConnectionType = .other
+      .other
     } else {
-      newConnectionType = .none
+      .none
     }
 
     if newConnectionType != self.connectionType {

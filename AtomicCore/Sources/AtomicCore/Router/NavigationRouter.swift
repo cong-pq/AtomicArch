@@ -25,7 +25,7 @@ open class NavigationRouter: NSObject {
   }
 
   open func dismiss(animated: Bool) {
-    guard let routerRootController = routerRootController else {
+    guard let routerRootController else {
       self.navigationController.popToRootViewController(
         animated: animated)
       return

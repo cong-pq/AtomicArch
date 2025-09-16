@@ -14,15 +14,15 @@ final class UserDetailViewModel: ViewModel, ViewModelType {
     static func == (lhs: ViewState, rhs: ViewState) -> Bool {
       switch (lhs, rhs) {
       case (.idle, .idle):
-        return true
+        true
       case (.loading, .loading):
-        return true
+        true
       case let (.loaded(lhsUser), .loaded(rhsUser)):
-        return lhsUser == rhsUser
+        lhsUser == rhsUser
       case let (.error(lhsError), .error(rhsError)):
-        return lhsError.localizedDescription == rhsError.localizedDescription
+        lhsError.localizedDescription == rhsError.localizedDescription
       default:
-        return false
+        false
       }
     }
   }

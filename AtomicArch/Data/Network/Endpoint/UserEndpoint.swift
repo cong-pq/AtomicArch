@@ -7,7 +7,7 @@ enum UserEndpoint {
 }
 
 extension UserEndpoint: Target {
-  public var path: String {
+  var path: String {
     switch self {
     case .getListUser:
       "/users"
@@ -16,25 +16,25 @@ extension UserEndpoint: Target {
     }
   }
 
-  public var method: Networking.HTTPMethod {
+  var method: Networking.HTTPMethod {
     .get
   }
 
-  public var task: Networking.Task {
+  var task: Networking.Task {
     switch self {
     case let .getListUser(perPage, since):
-      return .requestParameters(
+      .requestParameters(
         parameters: [
           "per_page": "\(perPage)",
           "since": "\(since)"
         ]
       )
     case .getUserDetail:
-      return .requestPlain
+      .requestPlain
     }
   }
 
-  public var headers: [String: String] {
+  var headers: [String: String] {
     [:]
   }
 }
