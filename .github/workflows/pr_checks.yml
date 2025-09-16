@@ -23,6 +23,10 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+      SCHEME: AtomicArch
+      PLATFORM: iOS
     
     steps:
       - name: Checkout code
@@ -33,6 +37,14 @@ jobs:
         with:
           xcode-version: latest
           
+      - name: Cache Swift packages
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+            
       - name: Resolve Swift Packages
         run: xcodebuild -resolvePackageDependencies -project AtomicArch.xcodeproj
           
@@ -43,8 +55,8 @@ jobs:
         run: |
           xcodebuild clean test \
             -project AtomicArch.xcodeproj \
-            -scheme AtomicArch \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -scheme ${{ env.SCHEME }} \
+            -destination 'platform=${{ env.PLATFORM }} Simulator,name=iPhone 16 Pro,OS=latest' \
             -enableCodeCoverage YES | xcpretty
       
       - name: Upload Test Results

@@ -5,10 +5,19 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
   build-and-test:
     name: Build and Test
     runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+      SCHEME: AtomicArch
+      PLATFORM: iOS
     
     steps:
       - name: Checkout code
@@ -19,6 +28,14 @@ jobs:
         with:
           xcode-version: latest
           
+      - name: Cache Swift packages
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+            
       - name: Resolve Swift Packages
         run: xcodebuild -resolvePackageDependencies -project AtomicArch.xcodeproj
           
@@ -29,8 +46,8 @@ jobs:
         run: |
           xcodebuild clean test \
             -project AtomicArch.xcodeproj \
-            -scheme AtomicArch \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -scheme ${{ env.SCHEME }} \
+            -destination 'platform=${{ env.PLATFORM }} Simulator,name=iPhone 16 Pro,OS=latest' \
             -enableCodeCoverage YES | xcpretty
           
   create-release:
@@ -68,37 +85,23 @@ jobs:
               ]
             }
           
+      - name: Process release template
+        id: release_template
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          CHANGELOG="${{ steps.changelog.outputs.changelog }}"
+          TEMPLATE=$(cat .github/release-template.md)
+          TEMPLATE="${TEMPLATE//\$\{VERSION\}/$VERSION}"
+          TEMPLATE="${TEMPLATE//\$\{CHANGELOG\}/$CHANGELOG}"
+          echo "$TEMPLATE" > release_notes.md
+          
       - name: Create Release
         uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: AtomicArch ${{ steps.get_version.outputs.VERSION }}
-          body: |
-            # AtomicArch ${{ steps.get_version.outputs.VERSION }}
-            
-            ## Changes
-            ${{ steps.changelog.outputs.changelog }}
-            
-            ## Architecture
-            Clean Architecture with MVVM pattern, Combine for state management, and coordinator-based navigation.
-            
-            ## Features
-            - **User List**: Display GitHub users with infinite scroll pagination
-            - **User Details**: View comprehensive user profiles
-            - **Async/Await**: Modern Swift concurrency patterns
-            - **Combine Integration**: Reactive programming for state management
-            - **Coordinator Pattern**: Clean navigation flow management
-            
-            ## Requirements
-            - iOS 18.5+
-            - Xcode 15.0+
-            - Swift 5.9+
-            
-            ## Installation
-            ```bash
-            git clone https://github.com/phanquangcong/AtomicArch.git
-            cd AtomicArch
-            xcodebuild -resolvePackageDependencies
-            ```
+          body_path: release_notes.md
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
