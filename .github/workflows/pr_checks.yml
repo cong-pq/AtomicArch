@@ -18,7 +18,12 @@ jobs:
         run: brew install swiftlint
         
       - name: Run SwiftLint
-        run: swiftlint lint --strict --config .swiftlint.yml
+        run: |
+          if [ -f .swiftlint.yml ]; then
+            swiftlint lint --strict --config .swiftlint.yml
+          else
+            swiftlint lint --strict
+          fi
   
   build-and-test:
     name: Build and Test
@@ -53,4 +58,4 @@ jobs:
         with:
           name: TestResults
           path: |
-            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresultGS
+            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
