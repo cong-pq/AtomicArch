@@ -19,19 +19,19 @@ public enum LogLevel {
   func toLoggingLevel() -> Logging.Logger.Level {
     switch self {
     case .trace:
-      return .trace
+      .trace
     case .debug:
-      return .debug
+      .debug
     case .info:
-      return .info
+      .info
     case .notice:
-      return .notice
+      .notice
     case .warning:
-      return .warning
+      .warning
     case .error:
-      return .error
+      .error
     case .critical:
-      return .critical
+      .critical
     }
   }
 }

@@ -9,11 +9,11 @@ final class LoggingInterceptor: NetworkInterceptor {
     self.logger = logger
   }
 
-  public func intercept(request: inout URLRequest) {
+  func intercept(request: inout URLRequest) {
     self.logger.log(level: .info, message: request.logMessage())
   }
 
-  public func intercept(response: URLResponse?, data: Data?, error: (any Error)?) {
+  func intercept(response: URLResponse?, data: Data?, error: (any Error)?) {
     if let httpResponse = response as? HTTPURLResponse {
       self.logger.log(data: data, response: httpResponse, error: error)
     }

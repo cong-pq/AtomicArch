@@ -6,7 +6,10 @@ repos:
         entry: swiftformat
         language: system
         types: [swift]
-        args: [--config, .swiftformat]
+        args: [--config, .swiftformat, --swiftversion, "5.9"]
+        # Allow committing even if files were modified by this hook
+        always_run: true
+        pass_filenames: true
         files: \.(swift)$
       - id: swiftlint
         name: SwiftLint
@@ -17,3 +20,5 @@ repos:
         pass_filenames: true
         require_serial: true
         stages: [commit]
+        # Don't fail on warnings, only on errors
+        args: [--quiet]

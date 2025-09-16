@@ -30,7 +30,7 @@ final class UserDetailCoordinator: Coordinator, UserDetailViewControllerDelegate
       .build()
 
     self.router.present(viewController, animated: animated, onDismissed: { [weak self] in
-      guard let self = self else { return }
+      guard let self else { return }
       self.delegate?.userDetailCoordinatorDidFinish(self)
       onDismissed?()
     })

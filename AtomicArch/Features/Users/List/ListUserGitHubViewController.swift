@@ -281,7 +281,7 @@ final class ListUserGitHubViewController: UIViewController, View {
 
 extension ListUserGitHubViewController: UITableViewDataSource {
   func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-    return self.viewModel.users.count
+    self.viewModel.users.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

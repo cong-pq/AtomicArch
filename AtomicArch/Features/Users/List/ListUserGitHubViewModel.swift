@@ -14,15 +14,15 @@ final class ListUserGitHubViewModel: ViewModel, ViewModelType {
     static func == (lhs: ViewState, rhs: ViewState) -> Bool {
       switch (lhs, rhs) {
       case (.idle, .idle):
-        return true
+        true
       case (.loading, .loading):
-        return true
+        true
       case let (.loaded(lhsUser), .loaded(rhsUser)):
-        return lhsUser == rhsUser
+        lhsUser == rhsUser
       case (.error, .error):
-        return true
+        true
       default:
-        return false
+        false
       }
     }
   }
@@ -102,7 +102,7 @@ final class ListUserGitHubViewModel: ViewModel, ViewModelType {
 
   private func appendUsers(_ newUsers: [UserEntity]) {
     self.appendQueue.sync {
-      let existingUserIDs = Set(users.map { $0.id })
+      let existingUserIDs = Set(users.map(\.id))
       let filteredUsers = newUsers.filter { !existingUserIDs.contains($0.id) }
       self.users.append(contentsOf: filteredUsers)
     }

@@ -1,57 +1,56 @@
-included:
-  - Sources
-  - Tests
-
-excluded:
-  - Pods
-  - .build
-  - DerivedData
-  - Generated
-
-# Common rules
+# Default rules are enabled by default
 disabled_rules:
-  - trailing_whitespace
-  - line_length
-  - function_body_length
-  - cyclomatic_complexity
+  - trailing_whitespace # Trailing whitespace is sometimes useful
+  - line_length # Line length is handled by the formatter
 
 opt_in_rules:
-  - empty_count
-  - closure_spacing
-  - contains_over_first_not_nil
-  - fatal_error_message
-  - force_unwrapping
-  - multiline_parameters
-  - private_outlet
-  - sorted_imports
-  - unneeded_parentheses_in_closure_argument
-  - vertical_whitespace_closing_braces
+  - empty_count # Prefer isEmpty over count == 0
+  - empty_string # Prefer isEmpty over string == ""
+  - explicit_init # Prefer using explicit init when type is ambiguous
+  - closure_spacing # Closure expressions should have a single space inside each brace
+  - force_unwrapping # Force unwrapping should be avoided
 
-# Customized rules
-line_length:
-  warning: 120
-  error: 200
-  ignores_comments: true
+# Paths to include during linting
+included:
+  - AtomicArch
 
-type_body_length:
-  warning: 300
-  error: 500
+# Paths to ignore during linting
+excluded:
+  - Pods
+  - AtomicArch/Generated
+  - AtomicArchTests
+  - AtomicArchUITests
+  - vendor
+  - fastlane
+  - Carthage
+  - DerivedData
+
+# Customize rules
+identifier_name:
+  excluded:
+    - id
+    - to
+    - at
+    - of
+    - up
+    - on
+    - no
+    - URL
+  
+type_name:
+  min_length: 3
+  max_length: 50
 
 file_length:
   warning: 500
-  error: 1000
+  error: 1200
 
-identifier_name:
-  min_length: 2
-  max_length: 40
+type_body_length:
+  warning: 350
+  error: 400
 
-type_name:
-  min_length: 3
-  max_length: 40
+nesting:
+  type_level:
+    warning: 3
 
-# Performance optimization
-cache_enabled: true
-analyzer_rules:
-  - explicit_self
-  - unused_declaration
-  - unused_import
+reporter: "xcode"

@@ -16,42 +16,42 @@ public enum NetworkError: Error, Equatable {
   public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
     switch (lhs, rhs) {
     case (.noConnection, .noConnection):
-      return true
+      true
     case (.invalidResponse, .invalidResponse):
-      return true
+      true
     case let (.httpError(lhsCode, _), .httpError(rhsCode, _)):
-      return lhsCode == rhsCode
+      lhsCode == rhsCode
     case (.decodingError, .decodingError):
-      return true
+      true
     default:
-      return false
+      false
     }
   }
 
   public var localizedDescription: String {
     switch self {
     case .invalidURL:
-      return "Invalid URL"
+      "Invalid URL"
     case .invalidResponse:
-      return "Invalid response from server"
+      "Invalid response from server"
     case let .httpError(statusCode, _):
-      return "HTTP error with status code: \(statusCode)"
+      "HTTP error with status code: \(statusCode)"
     case let .decodingError(error):
-      return "Failed to decode response: \(error.localizedDescription)"
+      "Failed to decode response: \(error.localizedDescription)"
     case let .networkError(error):
-      return "Network error: \(error.localizedDescription)"
+      "Network error: \(error.localizedDescription)"
     case .unauthorized:
-      return "Unauthorized access"
+      "Unauthorized access"
     case .timeout:
-      return "Request timed out"
+      "Request timed out"
     case .cancelled:
-      return "Request was cancelled"
+      "Request was cancelled"
     case .sslPinningFailed:
-      return "SSL certificate validation failed"
+      "SSL certificate validation failed"
     case .noConnection:
-      return "No internet connection available"
+      "No internet connection available"
     case .unknown:
-      return "Unknown error occurred"
+      "Unknown error occurred"
     }
   }
 }

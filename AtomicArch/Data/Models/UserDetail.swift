@@ -36,7 +36,7 @@ public struct UserDetailResponse: Decodable {
 
 extension UserDetailResponse {
   func toDomain() -> UserDetailEntity {
-    return UserDetailEntity(
+    UserDetailEntity(
       id: self.id,
       login: self.login ?? "",
       avatarUrl: self.avatarUrl ?? "",

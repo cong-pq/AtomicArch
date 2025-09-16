@@ -14,7 +14,7 @@ public protocol Coordinator: AnyObject {
 }
 
 public extension Coordinator {
-  func dismiss(animated: Bool) {
+  func dismiss(animated _: Bool) {
     router.dismiss(animated: true)
   }
 

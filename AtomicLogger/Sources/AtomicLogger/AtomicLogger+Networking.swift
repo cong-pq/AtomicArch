@@ -10,7 +10,7 @@ public extension LoggerProtocol {
     var message = ""
 
     // Log the request details
-    if let request = request {
+    if let request {
       message += "\n📤 Request:\n\(request.logMessage())"
     }
 
@@ -21,14 +21,14 @@ public extension LoggerProtocol {
       message += "  ✅ Status Code: \(statusCode)\n"
     }
 
-    if let data = data {
+    if let data {
       message += "  📦 Payload:\n\(data.prettyPrintPayload().indented(by: 4))\n"
     } else {
       message += "  📦 Payload: No data received\n"
     }
 
     // Log errors if present
-    if let error = error {
+    if let error {
       message += "  ❌ Error: \(error.localizedDescription)\n"
       self.log(level: .error, message: message)
     } else {
@@ -57,11 +57,11 @@ extension Data {
       let jsonData = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
       let jsonString = String(data: jsonData, encoding: .utf8)
     {
-      return jsonString
+      jsonString
     } else if let string = String(data: self, encoding: .utf8) {
-      return "\"\(string)\""
+      "\"\(string)\""
     } else {
-      return "\"Unable to parse payload\""
+      "\"Unable to parse payload\""
     }
   }
 }

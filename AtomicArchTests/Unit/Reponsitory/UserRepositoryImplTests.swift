@@ -44,7 +44,7 @@ final class UserRepositoryImplTests: XCTestCase {
     self.networkService.requestHandler = { _ in throw NetworkError.noConnection }
 
     // Act & Assert
-    await XCTAssertThrowsErrorAsync(try await self.repository.getListUser(perPage: 10, since: 0)) { error in
+    await XCTAssertThrowsErrorAsync(try self.repository.getListUser(perPage: 10, since: 0)) { error in
       XCTAssertEqual(error as? NetworkError, .noConnection)
     }
   }
@@ -82,7 +82,7 @@ final class UserRepositoryImplTests: XCTestCase {
     self.networkService.requestHandler = { _ in throw NetworkError.noConnection }
 
     // Act & Assert
-    await XCTAssertThrowsErrorAsync(try await self.repository.getUser(with: "test")) { error in
+    await XCTAssertThrowsErrorAsync(try self.repository.getUser(with: "test")) { error in
       XCTAssertEqual(error as? NetworkError, .noConnection)
     }
   }

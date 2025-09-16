@@ -30,7 +30,7 @@ final class UserUseCaseImplTests: XCTestCase {
     self.repository.getListUserHandler = { _, _ in throw NetworkError.noConnection }
 
     // Act & Assert
-    await XCTAssertThrowsErrorAsync(try await self.useCase.getListUser(perPage: 10, since: 0)) { error in
+    await XCTAssertThrowsErrorAsync(try self.useCase.getListUser(perPage: 10, since: 0)) { error in
       XCTAssertEqual(error as? NetworkError, .noConnection)
     }
     XCTAssertEqual(self.repository.getListUserCallCount, 1)
@@ -56,7 +56,7 @@ final class UserUseCaseImplTests: XCTestCase {
     self.repository.getUserHandler = { _ in throw NetworkError.noConnection }
 
     // Act & Assert
-    await XCTAssertThrowsErrorAsync(try await self.useCase.getUser(with: "test")) { error in
+    await XCTAssertThrowsErrorAsync(try self.useCase.getUser(with: "test")) { error in
       XCTAssertEqual(error as? NetworkError, .noConnection)
     }
     XCTAssertEqual(self.repository.getUserCallCount, 1)
