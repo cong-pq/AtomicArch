@@ -2,6 +2,14 @@
 
 AtomicArch is a modern iOS application that demonstrates clean architecture principles and best practices in Swift development. The project showcases a well-structured, modular approach to building iOS applications with a focus on maintainability, testability, and scalability.
 
+## 🔗 Quick Links
+
+- High-Level Design (HLD): docs/HIGH_LEVEL_DESIGN.md
+- CI Workflows: .github/workflows/
+    - Pull Request Checks: .github/workflows/pr_checks.yml
+    - Main CI (push to main): .github/workflows/ci.yml
+    - Release (tag push): .github/workflows/release.yml
+
 ## ✨ Project Goal
 
 The primary goal of **AtomicArch** is to serve as a reference implementation of Clean Architecture in a modern iOS application. It is designed to be a practical guide for developers looking to build scalable, maintainable, and testable apps using **Swift**, **Combine**, and modern concurrency.
@@ -242,61 +250,39 @@ classDiagram
 
 ```
 AtomicArch/
-├── Application/          # App lifecycle and configuration
+├── Application/            # App lifecycle and configuration
 │   ├── AppDelegate.swift
 │   ├── SceneDelegate.swift
 │   ├── AppConfig.swift
 │   └── Environment.swift
-├── Features/            # Feature modules (Presentation Layer)
-│   └── Users/          # User-related features
-│       ├── List/       # User list feature
-│       │   ├── ListUserGitHubViewController.swift
-│       │   ├── ListUserGitHubViewModel.swift
-│       │   ├── ListUserGitHubCoordinator.swift
-│       │   ├── ListUserViewControllerBuilder.swift
-│       │   └── UserCell.swift
-│       ├── Detail/     # User detail feature
-│       │   ├── UserDetailViewController.swift
-│       │   ├── UserDetailViewModel.swift
-│       │   ├── UserDetailCoordinator.swift
-│       │   └── UserDetailViewControllerBuilder.swift
-│       └── Builders/   # View builders
-│           └── ViewControllerBuilder.swift
-├── Domain/             # Business logic (Domain Layer)
-│   ├── Entities/       # Domain entities
-│   │   ├── UserEntity.swift
-│   │   └── UserDetailEntity.swift
-│   ├── Interfaces/     # Abstraction for data layer
+├── Features/               # Feature modules (Presentation layer)
+│   └── Users/
+│       ├── List/
+│       ├── Detail/
+│       └── Builders/
+├── Domain/                 # Business logic (Domain layer)
+│   ├── Entities/
+│   ├── Interfaces/
 │   │   └── Repositories/
-│   │       └── UserRepository.swift
-│   └── UseCase/        # Business logic and protocols
-│       ├── Protocol/
-│       │   └── UserUseCase.swift
-│       └── UserUseCaseImpl.swift
-├── Data/              # Data layer implementation
-│   ├── Models/        # Data models (API responses)
-│   │   ├── User.swift
-│   │   └── UserDetail.swift
-│   ├── Repository/    # Repository implementations
-│   │   └── UserRepositoryImpl.swift
-│   └── Network/       # Network-related components
+│   └── UseCase/
+│       └── Protocol/
+├── Data/                   # Data layer implementation
+│   ├── Models/
+│   ├── Repository/
+│   └── Network/
 │       ├── Endpoint/
-│       │   └── UserEndpoint.swift
 │       └── Interceptor/
-│           └── LoggingInterceptor.swift
-├── Router/            # Navigation infrastructure
-│   └── SceneRouter.swift
-├── Networking/        # Networking module (separate package)
-├── AtomicLogger/      # Logging module (separate package)
-├── AtomicCore/        # Core utilities (separate package)
-└── AtomicArchTests/     # Test suite
+├── Router/                 # Navigation infrastructure
+├── Networking/             # Networking module (Swift Package)
+├── AtomicLogger/           # Logging module (Swift Package)
+├── AtomicCore/             # Core utilities (Swift Package)
+└── AtomicArchTests/        # Test suite
     ├── Unit/
-    │   └── ViewModel/
-    │       ├── ListUserGitHubViewModelTests.swift
-    │       └── UserDetailViewModelTests.swift
+    │   ├── ViewModel/
+    │   ├── UseCase/
+    │   └── Repository/
     ├── Helpers/
     └── Mocks/
-        └── MockUserUseCase.swift
 ```
 
 ## 🛠 Technical Stack
@@ -333,7 +319,8 @@ AtomicArchTests/
 ├── Helpers/
 │   └── TestData.swift
 └── Mocks/
-    └── MockUserUseCase.swift
+    ├── UserUseCaseMock.swift
+    └── UserRepositoryMock.swift
 ```
 
 ### 3. Testing Principles
@@ -342,32 +329,30 @@ AtomicArchTests/
 - **Maintainability**: Clear test structure with descriptive names
 - **Performance**: Fast execution with minimal dependencies
 
-### 4. Running Tests
-
-```bash
-# Run all tests
-xcodebuild test -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
-
-# Run specific test target
-xcodebuild test -scheme AtomicArch -only-testing:AtomicArchTests/ListUserGitHubViewModelTests -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
-```
+<!-- Removed duplicate test commands (see Development Setup > Running Tests) -->
 
 ## 🔄 CI/CD Pipeline
 
 The project uses GitHub Actions for continuous integration:
 
 1. **Pre-commit Hooks**
-   - Code formatting (SwiftFormat)
-   - Linting (SwiftLint)
-   - Basic tests
+    - Code formatting (SwiftFormat)
+    - Linting (SwiftLint)
 
 2. **Pull Request Checks**
-   - Automated testing
-   - Code quality checks
-   - Build verification
+    - Lint (SwiftLint using .swiftlint.yaml)
+    - Build and run tests on macOS runner
+
+3. **Main Branch CI**
+    - On push to main, build and run tests
+
+4. **Release**
+    - Pushing a tag matching v*.*.* triggers a release
+    - Release notes are generated from a template (.github/release-template.md) and changelog
 
 ## 📚 Documentation
 
+- **High-Level Design (HLD)**: See docs/HIGH_LEVEL_DESIGN.md for the full system design and module interactions
 - **Architecture Documentation**: This README provides comprehensive architecture overview
 - **API Documentation**: Inline documentation for all public APIs
 - **Testing Guidelines**: Clear testing patterns and best practices
@@ -397,12 +382,74 @@ The project uses GitHub Actions for continuous integration:
    xcodebuild test -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
    ```
 
+## 🧹 Linting & Formatting
+
+- SwiftFormat and SwiftLint are configured for consistent style and quality.
+- Pre-commit is set up to run these tools automatically.
+
+Setup locally:
+
+1. Install tools (once): SwiftFormat, SwiftLint, and pre-commit
+2. Install the hooks: pre-commit install
+3. Run on all files (optional): pre-commit run --all-files
+
+Configs:
+
+- SwiftLint: .swiftlint.yaml
+- SwiftFormat: .swiftformat (with Swift version in .swift-version)
+
 ### Development Guidelines
 - Follow Clean Architecture principles
 - Write comprehensive unit tests
 - Maintain code documentation
 - Use SwiftLint and SwiftFormat
 - Follow the established naming conventions
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps to get your environment ready and keep changes consistent with the project’s standards.
+
+### 1) Set up local tooling (one time)
+
+Install the code quality tools and Git hooks helper:
+
+```bash
+# macOS via Homebrew
+brew install pre-commit swiftlint swiftformat
+
+# Alternatively (for pre-commit)
+pipx install pre-commit  # or: pip install --user pre-commit
+```
+
+### 2) Enable pre-commit hooks
+
+```bash
+pre-commit install
+
+# Optional: run on the full repo once
+pre-commit run --all-files
+```
+
+Pre-commit will automatically format with SwiftFormat and lint with SwiftLint on each commit.
+
+### 3) Run local quality checks
+
+```bash
+# Format
+swiftformat .
+
+# Lint
+swiftlint lint --config .swiftlint.yaml
+
+# Tests
+xcodebuild test -scheme AtomicArch -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
+```
+
+### 4) Create a PR
+
+- Keep changes focused and include tests where applicable
+- Ensure pre-commit, lint, and tests pass locally
+- Open a PR to `main`; CI will run PR checks (lint + build/test)
 
 ## 🎥 Demo
 
@@ -412,4 +459,4 @@ The project uses GitHub Actions for continuous integration:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
