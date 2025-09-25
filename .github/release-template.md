@@ -4,13 +4,9 @@
 
 ${CHANGELOG}
 
-## 🔧 CI/CD Improvements
+## 🔧 Docs Improvements
 
-- Added CI/CD GitHub Actions workflows
-- Configured SwiftLint with custom ruleset
-- Added pre-commit hooks for code quality
-- Added automated release workflow
-- Improved build and test automation
+- Add high-level design doc and enhance README
 
 ## 🧰 Developer Experience
 
