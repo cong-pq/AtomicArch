@@ -4,7 +4,11 @@ AtomicArch is a modern iOS application that demonstrates clean architecture prin
 
 ## 🔗 Quick Links
 
-- High-Level Design (HLD): docs/HIGH_LEVEL_DESIGN.md
+- High-Level Design (HLD): [docs/HIGH_LEVEL_DESIGN.md](docs/HIGH_LEVEL_DESIGN.md)
+- CI Workflows: [.github/workflows/](/.github/workflows/)
+    - Pull Request Checks: [.github/workflows/pr_checks.yml](/.github/workflows/pr_checks.yml)
+    - Main CI (push to main): [.github/workflows/ci.yml](/.github/workflows/ci.yml)
+    - Release (tag push): [.github/workflows/release.yml](/.github/workflows/release.yml)
 - CI Workflows: .github/workflows/
     - Pull Request Checks: .github/workflows/pr_checks.yml
     - Main CI (push to main): .github/workflows/ci.yml
